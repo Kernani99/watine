@@ -148,6 +148,24 @@
             background-color: white;
         }
         
+        .patient-balance {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .balance-positive {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .balance-zero {
+            color: #27ae60;
+        }
+        
         .select2-container--default .select2-selection--single {
             border: 1px solid #e0c8e0;
             border-radius: 10px;
@@ -595,23 +613,48 @@
             transform: rotate(-20deg);
         }
         
+        /* إعدادات الطباعة */
         @media print {
-            body * {
-                visibility: hidden;
+            @page {
+                size: A4;
+                margin: 10mm;
             }
-            .report, .report * {
-                visibility: visible;
+            
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                font-size: 12pt;
             }
+            
             .report {
-                position: absolute;
-                left: 0;
-                top: 0;
                 width: 100%;
+                margin: 0;
+                padding: 15px;
                 box-shadow: none;
                 border: none;
             }
+            
             .no-print {
                 display: none !important;
+            }
+            
+            .prescription-only .report-header,
+            .prescription-only .report-details,
+            .prescription-only .report-teeth,
+            .prescription-only .report-footer {
+                display: none;
+            }
+            
+            .prescription-only .report-title {
+                font-size: 18pt;
+                text-align: center;
+                margin: 10px 0;
+            }
+            
+            .prescription-only .report-medications {
+                margin-top: 10px;
             }
         }
         
@@ -671,6 +714,9 @@
                         <select id="patient-select" class="form-control" required style="width: 100%">
                             <option value="">اختر المريض...</option>
                         </select>
+                        <div id="patient-balance" class="patient-balance" style="display: none;">
+                            <span id="balance-text"></span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -818,7 +864,10 @@
             </div>
             <div class="action-buttons no-print" style="justify-content: center; margin-top: 20px;">
                 <button onclick="printReport()" class="btn btn-primary">
-                    <i class="fas fa-print"></i> طباعة التقرير
+                    <i class="fas fa-print"></i> طباعة التقرير الكامل
+                </button>
+                <button onclick="printPrescriptionOnly()" class="btn btn-success">
+                    <i class="fas fa-prescription-bottle-alt"></i> طباعة الوصفة فقط
                 </button>
                 <button onclick="closeReportModal()" class="btn btn-secondary">
                     <i class="fas fa-times"></i> إغلاق
@@ -850,6 +899,7 @@
         let currentTreatmentId = null;
         let treatedTeeth = [];
         let medications = [];
+        let currentPatientBalance = 0;
         
         // عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
@@ -893,7 +943,45 @@
             // البحث والتصفية
             document.getElementById('search-treatments').addEventListener('input', filterTreatments);
             document.getElementById('filter-date').addEventListener('change', filterTreatments);
+            
+            // عند تغيير اختيار المريض
+            document.getElementById('patient-select').addEventListener('change', function() {
+                const patientId = this.value;
+                if (patientId) {
+                    loadPatientBalance(patientId);
+                } else {
+                    document.getElementById('patient-balance').style.display = 'none';
+                }
+            });
         });
+        
+        // تحميل رصيد المريض
+        function loadPatientBalance(patientId) {
+            database.ref('/Watine/patients/' + patientId + '/balance').once('value')
+                .then(snapshot => {
+                    const balance = snapshot.val() || 0;
+                    currentPatientBalance = balance;
+                    
+                    const balanceElement = document.getElementById('patient-balance');
+                    const balanceText = document.getElementById('balance-text');
+                    
+                    balanceElement.style.display = 'block';
+                    
+                    if (balance > 0) {
+                        balanceText.textContent = `المبلغ المستحق: ${balance} دج`;
+                        balanceText.className = 'balance-positive';
+                    } else if (balance < 0) {
+                        balanceText.textContent = `لدينا رصيد للمريض: ${Math.abs(balance)} دج`;
+                        balanceText.className = 'balance-zero';
+                    } else {
+                        balanceText.textContent = 'لا يوجد رصيد مستحق';
+                        balanceText.className = 'balance-zero';
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading patient balance:", error);
+                });
+        }
         
         // تحميل قائمة المرضى
         function loadPatients() {
@@ -1469,8 +1557,15 @@
             document.getElementById('report-modal').style.display = 'block';
         }
         
-        // طباعة التقرير
+        // طباعة التقرير الكامل
         function printReport() {
+            document.getElementById('report-content').classList.remove('prescription-only');
+            window.print();
+        }
+        
+        // طباعة الوصفة الطبية فقط
+        function printPrescriptionOnly() {
+            document.getElementById('report-content').classList.add('prescription-only');
             window.print();
         }
         

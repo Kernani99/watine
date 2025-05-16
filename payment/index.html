@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة المدفوعات - عيادة الأسنان</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -23,7 +23,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
         
         body {
@@ -457,6 +457,7 @@
         <div class="card">
             <h2 class="card-title"><i class="fas fa-plus-circle"></i> تسجيل دفعة جديدة</h2>
             <form id="payment-form">
+                <input type="hidden" id="payment-id">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="patient-select">المريض</label>
@@ -519,8 +520,14 @@
                     <button type="button" id="save-payment" class="btn btn-primary">
                         <i class="fas fa-save"></i> حفظ الدفعة
                     </button>
+                    <button type="button" id="update-payment" class="btn btn-warning" style="display: none;">
+                        <i class="fas fa-sync-alt"></i> تحديث الدفعة
+                    </button>
                     <button type="reset" class="btn btn-secondary">
                         <i class="fas fa-undo"></i> إعادة تعيين
+                    </button>
+                    <button type="button" id="cancel-edit" class="btn btn-danger" style="display: none;">
+                        <i class="fas fa-times"></i> إلغاء التعديل
                     </button>
                 </div>
             </form>
@@ -591,6 +598,8 @@
         // متغيرات التطبيق
         let patients = [];
         let payments = [];
+        let isEditing = false;
+        let currentPaymentId = null;
         
         // عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
@@ -614,6 +623,12 @@
             
             // حفظ الدفعة
             document.getElementById('save-payment').addEventListener('click', savePayment);
+            
+            // تحديث الدفعة
+            document.getElementById('update-payment').addEventListener('click', updatePayment);
+            
+            // إلغاء التعديل
+            document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
             
             // البحث والتصفية
             document.getElementById('search-payments').addEventListener('input', filterPayments);
@@ -697,7 +712,7 @@
                     phone: 'غير متوفر'
                 };
                 
-                const paymentDate = payment.date ? new Date(payment.date).toLocaleDateString('ar-EG') : 'غير محدد';
+                const paymentDate = payment.date ? formatDateWithForeignNumbers(new Date(payment.date)) : 'غير محدد';
                 const statusClass = payment.status || 'pending';
                 const statusText = getStatusText(payment.status);
                 
@@ -799,13 +814,143 @@
             database.ref('Watine/payments/' + paymentId).set(paymentData)
                 .then(() => {
                     alert('تم حفظ الدفعة بنجاح');
-                    document.getElementById('payment-form').reset();
+                    resetForm();
                     loadPayments();
                     generateReceipt(paymentId, { ...paymentData, id: paymentId });
                 })
                 .catch(error => {
                     alert('حدث خطأ أثناء حفظ الدفعة: ' + error.message);
                     console.error("Error saving payment:", error);
+                });
+        }
+        
+        // تعديل الدفعة
+        function editPayment(paymentId) {
+            const payment = payments.find(p => p.id === paymentId);
+            if (!payment) return;
+            
+            // حفظ معرف الدفعة الحالية
+            currentPaymentId = paymentId;
+            isEditing = true;
+            
+            // تعبئة النموذج ببيانات الدفعة
+            document.getElementById('payment-id').value = paymentId;
+            document.getElementById('patient-select').value = payment.patientId;
+            document.getElementById('payment-amount').value = payment.amount;
+            document.getElementById('payment-status').value = payment.status;
+            document.getElementById('payment-date').value = payment.date;
+            document.querySelector(`input[name="installment"][value="${payment.installment || 'no'}"]`).checked = true;
+            
+            if (payment.installment === 'yes') {
+                document.getElementById('installment-details').style.display = 'block';
+                document.getElementById('total-amount').value = payment.totalAmount || '';
+                document.getElementById('remaining-amount').value = payment.remainingAmount || '';
+            } else {
+                document.getElementById('installment-details').style.display = 'none';
+            }
+            
+            document.getElementById('payment-notes').value = payment.notes || '';
+            
+            // تبديل أزرار الحفظ والتحديث
+            document.getElementById('save-payment').style.display = 'none';
+            document.getElementById('update-payment').style.display = 'inline-flex';
+            document.getElementById('cancel-edit').style.display = 'inline-flex';
+            
+            // التمرير إلى أعلى النموذج
+            document.getElementById('payment-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // تحديث الدفعة
+        function updatePayment() {
+            if (!currentPaymentId) return;
+            
+            const patientId = document.getElementById('patient-select').value;
+            const amount = document.getElementById('payment-amount').value;
+            const status = document.getElementById('payment-status').value;
+            const date = document.getElementById('payment-date').value;
+            const installment = document.querySelector('input[name="installment"]:checked').value;
+            const notes = document.getElementById('payment-notes').value;
+            
+            if (!patientId || !amount || !date) {
+                alert('الرجاء إدخال جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) {
+                alert('المريض غير موجود');
+                return;
+            }
+            
+            const paymentData = {
+                patientId,
+                patientName: patient.name,
+                patientPhone: patient.phone,
+                amount: parseFloat(amount),
+                status,
+                date,
+                installment,
+                notes: notes || '',
+                updatedAt: new Date().toISOString()
+            };
+            
+            // إذا كانت دفعة على أقساط
+            if (installment === 'yes') {
+                paymentData.totalAmount = document.getElementById('total-amount').value || amount;
+                paymentData.remainingAmount = document.getElementById('remaining-amount').value || 
+                    (paymentData.totalAmount - amount);
+            }
+            
+            // تحديث البيانات في Firebase
+            database.ref('Watine/payments/' + currentPaymentId).update(paymentData)
+                .then(() => {
+                    alert('تم تحديث الدفعة بنجاح');
+                    resetForm();
+                    loadPayments();
+                })
+                .catch(error => {
+                    alert('حدث خطأ أثناء تحديث الدفعة: ' + error.message);
+                    console.error("Error updating payment:", error);
+                });
+        }
+        
+        // إلغاء التعديل
+        function cancelEdit() {
+            resetForm();
+        }
+        
+        // إعادة تعيين النموذج
+        function resetForm() {
+            document.getElementById('payment-form').reset();
+            document.getElementById('payment-id').value = '';
+            document.getElementById('installment-details').style.display = 'none';
+            
+            // إعادة تعيين تاريخ اليوم
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('payment-date').value = today;
+            
+            // تبديل الأزرار إلى وضعها الطبيعي
+            document.getElementById('save-payment').style.display = 'inline-flex';
+            document.getElementById('update-payment').style.display = 'none';
+            document.getElementById('cancel-edit').style.display = 'none';
+            
+            isEditing = false;
+            currentPaymentId = null;
+        }
+        
+        // حذف الدفعة
+        function deletePayment(paymentId) {
+            if (!confirm('هل أنت متأكد من حذف هذه الدفعة؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                return;
+            }
+            
+            database.ref('Watine/payments/' + paymentId).remove()
+                .then(() => {
+                    loadPayments();
+                })
+                .catch(error => {
+                    alert('حدث خطأ أثناء حذف الدفعة');
+                    console.error("Error deleting payment:", error);
                 });
         }
         
@@ -843,49 +988,6 @@
             displayPayments(filteredPayments);
         }
         
-        // تعديل الدفعة
-        function editPayment(paymentId) {
-            const payment = payments.find(p => p.id === paymentId);
-            if (!payment) return;
-            
-            // تعبئة النموذج ببيانات الدفعة
-            document.getElementById('patient-select').value = payment.patientId;
-            document.getElementById('payment-amount').value = payment.amount;
-            document.getElementById('payment-status').value = payment.status;
-            document.getElementById('payment-date').value = payment.date;
-            document.querySelector(`input[name="installment"][value="${payment.installment || 'no'}"]`).checked = true;
-            
-            if (payment.installment === 'yes') {
-                document.getElementById('installment-details').style.display = 'block';
-                document.getElementById('total-amount').value = payment.totalAmount || '';
-                document.getElementById('remaining-amount').value = payment.remainingAmount || '';
-            }
-            
-            document.getElementById('payment-notes').value = payment.notes || '';
-            
-            // التمرير إلى أعلى النموذج
-            document.getElementById('payment-form').scrollIntoView({ behavior: 'smooth' });
-            
-            // يمكنك هنا إضافة منطق التحديث بدلاً من الحفظ الجديد
-            alert('يمكنك تعديل بيانات الدفعة في النموذج أعلاه');
-        }
-        
-        // حذف الدفعة
-        function deletePayment(paymentId) {
-            if (!confirm('هل أنت متأكد من حذف هذه الدفعة؟ لا يمكن التراجع عن هذا الإجراء.')) {
-                return;
-            }
-            
-            database.ref('Watine/payments/' + paymentId).remove()
-                .then(() => {
-                    loadPayments();
-                })
-                .catch(error => {
-                    alert('حدث خطأ أثناء حذف الدفعة');
-                    console.error("Error deleting payment:", error);
-                });
-        }
-        
         // إنشاء وصل الدفع
         function generateReceipt(paymentId, paymentData) {
             const patient = patients.find(p => p.id === paymentData.patientId) || {
@@ -893,7 +995,7 @@
                 phone: 'غير متوفر'
             };
             
-            const receiptDate = paymentData.date ? new Date(paymentData.date).toLocaleDateString('ar-EG') : new Date().toLocaleDateString('ar-EG');
+            const receiptDate = paymentData.date ? formatDateWithForeignNumbers(new Date(paymentData.date)) : formatDateWithForeignNumbers(new Date());
             const statusText = getStatusText(paymentData.status);
             
             const receiptContent = `
@@ -990,6 +1092,26 @@
         // إغلاق نافذة الوصل
         function closeReceiptModal() {
             document.getElementById('receipt-modal').style.display = 'none';
+        }
+        
+        // تنسيق التاريخ بأرقام أجنبية
+        function formatDateWithForeignNumbers(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                numberingSystem: 'latn'
+            };
+            
+            let formattedDate = date.toLocaleDateString('ar-EG', options);
+            
+            // استبدال الأرقام العربية بأجنبية (في حالة عدم دعم numberingSystem)
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            for (let i = 0; i < arabicNumbers.length; i++) {
+                formattedDate = formattedDate.replace(new RegExp(arabicNumbers[i], 'g'), i);
+            }
+            
+            return formattedDate;
         }
         
         // وظائف مساعدة

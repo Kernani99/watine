@@ -3,292 +3,419 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل طالب جديد - المجمع القرآني حمزة بن عبدالمطلب</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>نظام إدارة العلاجات - عيادة واتين للأسنان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="https://i.ibb.co/jZrxhFsf/1-min.png" type="image/png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* أنماط CSS تبقى كما هي بدون تغيير */
         :root {
-            --primary-color: #1a4d2e;
-            --primary-dark: #0e3a23;
-            --secondary-color: #f5f5dc;
-            --accent-color: #4a7856;
-            --text-color: #333;
-            --light-bg: #f9f9f7;
-            --gold-color: #d4af37;
-            --error-color: #e74c3c;
-            --success-color: #2ecc71;
+            --primary: #a76dac;
+            --secondary: #8e44ad;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light-pink: #f8e1f4;
+            --light-purple: #f3e5f5;
+            --dark: #4a235a;
+            --light: #f9f9f9;
+            --gray: #95a5a6;
+            --white: #ffffff;
+            --teeth-color: #f5f5f5;
+            --treated-teeth: #a76dac;
         }
-
+        
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
         }
-
+        
         body {
-            background-color: var(--light-bg);
-            color: var(--text-color);
+            background-color: #fdf5fd;
+            color: #333;
             line-height: 1.6;
         }
-
-        header {
-            background: linear-gradient(rgba(26, 77, 46, 0.95), rgba(26, 77, 46, 0.95)),
-                        url('https://img.freepik.com/free-vector/abstract-islamic-golden-pattern-backdrop-ethnic-style_1017-54276.jpg') center/cover;
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            width: 100%;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            width: 150px;
-            margin: 0.5rem auto;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-        }
-
-        header h1 {
-            margin: 0.5rem 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            font-size: 1.8rem;
-            line-height: 1.3;
-            font-weight: 700;
-        }
-
+        
         .container {
-            max-width: 800px;
-            margin: 3rem auto;
-            padding: 0 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-
-        .registration-form {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .form-title {
-            color: var(--primary-color);
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
             text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-            font-weight: 800;
-            position: relative;
-        }
-
-        .form-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            right: 50%;
-            transform: translateX(50%);
-            width: 80px;
-            height: 4px;
-            background: var(--gold-color);
-            border-radius: 3px;
-        }
-
-        .section-title {
-            color: var(--primary-dark);
-            margin: 2rem 0 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--gold-color);
-            font-size: 1.3rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.2);
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .radio-option {
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
-        }
-
-        .radio-option input {
-            margin-left: 0.5rem;
-        }
-
-        .select-group {
+            justify-content: center;
+            flex-direction: column;
             position: relative;
         }
-
-        .select-group select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1em;
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
-
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.9rem;
-            margin-top: 0.3rem;
-            display: none;
+        
+        .clinic-logo {
+            height: 70px;
+            width: auto;
         }
-
-        .submit-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-size: 1.1rem;
+        
+        .header-text {
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
+            color: white;
+        }
+        
+        .header-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .card {
+            background-color: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-pink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
             display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
             width: 100%;
-            margin-top: 2rem;
+            padding: 12px 15px;
+            border: 1px solid #e0c8e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background-color: var(--light-pink);
         }
-
-        .submit-btn:hover {
-            background: var(--primary-dark);
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(167, 109, 172, 0.2);
+            background-color: white;
+        }
+        
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #e0c8e0;
+            border-radius: 10px;
+            height: auto;
+            padding: 10px;
+            background-color: var(--light-pink);
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn i {
+            margin-left: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+        
+        .btn-pink {
+            background-color: #f8bbd0;
+            color: #880e4f;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* تصميم مخطط الأسنان */
+        .teeth-chart {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .teeth-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .teeth-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .tooth {
+            width: 30px;
+            height: 40px;
+            margin: 0 5px;
+            background-color: var(--teeth-color);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            border: 1px solid #ddd;
+        }
+        
+        .tooth:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .form-note {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .download-btn {
-            background: var(--gold-color);
-            color: var(--primary-dark);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-block;
-            margin-top: 1rem;
-            text-decoration: none;
-        }
-
-        .download-btn:hover {
-            background: #c9a227;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .print-btn {
-            background: var(--accent-color);
+        
+        .tooth.treated {
+            background-color: var(--treated-teeth);
             color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-block;
-            margin: 1rem 0.5rem 0;
-            text-decoration: none;
         }
-
-        .print-btn:hover {
-            background: #3a6a4a;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        
+        .tooth-number {
+            font-size: 12px;
+            font-weight: bold;
         }
-
-        .recovery-section {
+        
+        .teeth-section {
+            margin-bottom: 30px;
+        }
+        
+        .teeth-section-title {
             text-align: center;
-            margin-top: 2rem;
-            padding: 1rem;
-            background-color: #f8f9fa;
+            margin: 15px 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* قسم الوصفات الطبية */
+        .prescription-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--light-pink);
+        }
+        
+        .medication-item {
+            background-color: var(--light-pink);
             border-radius: 8px;
-            display: none;
+            padding: 15px;
+            margin-bottom: 15px;
         }
-
-        .recovery-btn {
-            background: var(--accent-color);
+        
+        .add-medication {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        /* بطاقات العلاجات */
+        .treatment-card {
+            border-left: 4px solid var(--primary);
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.03);
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .treatment-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .treatment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #f0e6ef;
+        }
+        
+        .treatment-patient {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .treatment-date {
+            color: var(--gray);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .treatment-details {
+            margin-top: 15px;
+        }
+        
+        .treatment-type {
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-block;
-            margin-top: 0.5rem;
+            color: var(--dark);
+            margin-bottom: 10px;
         }
-
-        .recovery-btn:hover {
-            background: #3a6a4a;
+        
+        .treated-teeth-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
         }
-
-        footer {
-            background-color: var(--primary-dark);
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-            margin-top: 3rem;
+        
+        .treated-tooth {
+            background-color: var(--light-pink);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
         }
-
-        .copyright {
-            font-size: 0.9rem;
-            color: #ccc;
+        
+        .treatment-notes {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: var(--light-pink);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
         }
-
+        
+        .medication-list {
+            margin-top: 15px;
+        }
+        
+        .medication-list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #f0e6ef;
+        }
+        
+        .treatment-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        
+        /* نافذة التقرير */
         .modal {
             display: none;
             position: fixed;
@@ -296,792 +423,1081 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            overflow: auto;
         }
-
+        
         .modal-content {
             background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
             width: 90%;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            animation: modalFadeIn 0.3s ease-out;
+            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
         }
-
+        
         @keyframes modalFadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .modal-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .success-icon {
-            color: var(--success-color);
-        }
-
-        .error-icon {
-            color: var(--error-color);
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-dark);
-        }
-
-        .modal-message {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .modal-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .spinner {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255,255,255,0.8);
-            z-index: 100;
-            border-radius: 15px;
-            justify-content: center;
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0e6ef;
         }
-
-        .spinner-inner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .modal-title {
+            font-size: 22px;
+            color: var(--dark);
+            font-weight: 600;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.3s;
         }
-
+        
+        .close-btn:hover {
+            color: var(--danger);
+        }
+        
+        /* تقرير العلاج */
+        .report {
+            background-color: white;
+            padding: 30px;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            border: 1px solid #f0e6ef;
+        }
+        
+        .report-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #f0e6ef;
+        }
+        
+        .clinic-name {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .report-logo {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .report-title {
+            font-size: 20px;
+            color: var(--dark);
+            margin: 15px 0;
+        }
+        
+        .report-patient {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .report-details {
+            margin: 25px 0;
+        }
+        
+        .report-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .report-label {
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .report-value {
+            font-weight: 500;
+        }
+        
+        .report-teeth {
+            margin: 20px 0;
+        }
+        
+        .report-teeth-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .report-teeth-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .report-tooth {
+            background-color: var(--light-pink);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .report-medications {
+            margin-top: 20px;
+        }
+        
+        .report-medication {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #f0e6ef;
+        }
+        
+        .report-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px dashed #f0e6ef;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        /* تأثيرات خاصة */
+        .floral-decoration {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .floral-1 {
+            top: 20px;
+            left: 20px;
+            transform: rotate(30deg);
+        }
+        
+        .floral-2 {
+            bottom: 20px;
+            right: 20px;
+            transform: rotate(-20deg);
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .report, .report * {
+                visibility: visible;
+            }
+            .report {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                border: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
         @media (max-width: 768px) {
-            .container {
-                margin: 2rem auto;
-                padding: 0 1rem;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
             
-            .registration-form {
-                padding: 1.5rem;
+            .teeth-row {
+                flex-wrap: wrap;
             }
             
-            header h1 {
-                font-size: 1.5rem;
+            .tooth {
+                margin: 5px;
             }
             
-            .form-title {
-                font-size: 1.5rem;
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .clinic-logo {
+                height: 60px;
+            }
+            
+            .report-patient {
+                flex-direction: column;
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <img src="https://i.ibb.co/jZrxhFsf/1-min.png" alt="شعار المدرسة" class="logo">
-        <h1>تسجيل طالب جديد</h1>
+        <div class="header-content">
+            <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="clinic-logo">
+            <div class="header-text">
+                <h1><i class="fas fa-teeth"></i> نظام إدارة العلاجات</h1>
+                <div class="header-info">
+                    <span><i class="fas fa-hospital"></i> عيادة واتين للأسنان</span>
+                    <span><i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر</span>
+                </div>
+            </div>
+        </div>
+        <i class="fas fa-heart floral-decoration floral-1" style="color: var(--primary); font-size: 40px;"></i>
+        <i class="fas fa-spa floral-decoration floral-2" style="color: var(--primary); font-size: 40px;"></i>
     </header>
-
-    <main class="container">
-        <form class="registration-form" id="studentRegistration">
-            <div class="spinner" id="formSpinner">
-                <div class="spinner-inner"></div>
-            </div>
-            
-            <h2 class="form-title">استمارة تسجيل برعم ماقبل التمدرس</h2>
-            
-            <!-- معلومات المتمدرس -->
-            <h3 class="section-title">معلومات عن المتمدرس</h3>
-            
-            <div class="form-group">
-                <label for="firstName">الاسم <span class="required">*</span></label>
-                <input type="text" id="firstName" class="form-control" required>
-                <div class="error-message" id="firstNameError">يجب إدخال اسم المتمدرس</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="lastName">اللقب <span class="required">*</span></label>
-                <input type="text" id="lastName" class="form-control" required>
-                <div class="error-message" id="lastNameError">يجب إدخال لقب المتمدرس</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="birthDate">تاريخ الميلاد (يجب أن يكون سنة 2020) <span class="required">*</span></label>
-                <input type="date" id="birthDate" class="form-control" required>
-                <div class="error-message" id="birthDateError">يجب أن يكون تاريخ الميلاد في سنة 2020</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="birthPlace">مكان الميلاد <span class="required">*</span></label>
-                <input type="text" id="birthPlace" class="form-control" required>
-                <div class="error-message" id="birthPlaceError">يجب إدخال مكان الميلاد</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="fatherName">اسم الأب <span class="required">*</span></label>
-                <input type="text" id="fatherName" class="form-control" required>
-                <div class="error-message" id="fatherNameError">يجب إدخال اسم الأب</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="motherName">اسم ولقب الأم <span class="required">*</span></label>
-                <input type="text" id="motherName" class="form-control" required>
-                <div class="error-message" id="motherNameError">يجب إدخال اسم ولقب الأم</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="address">العنوان <span class="required">*</span></label>
-                <textarea id="address" class="form-control" rows="3" required></textarea>
-                <div class="error-message" id="addressError">يجب إدخال العنوان</div>
-            </div>
-            
-            <div class="form-group">
-                <label>الحالة الاجتماعية <span class="required">*</span></label>
-                <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" id="socialStatusNormal" name="socialStatus" value="عادية" required>
-                        <label for="socialStatusNormal">عادية</label>
+    
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-teeth-open" style="color: var(--primary);"></i> تسجيل علاج جديد</h2>
+            <form id="treatment-form">
+                <input type="hidden" id="treatment-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="patient-select"><i class="fas fa-user-injured" style="margin-left: 5px;"></i> المريض</label>
+                        <select id="patient-select" class="form-control" required style="width: 100%">
+                            <option value="">اختر المريض...</option>
+                        </select>
                     </div>
-                    <div class="radio-option">
-                        <input type="radio" id="socialStatusOrphan" name="socialStatus" value="يتيم">
-                        <label for="socialStatusOrphan">يتيم</label>
+                    
+                    <div class="form-group">
+                        <label for="treatment-type"><i class="fas fa-teeth" style="margin-left: 5px;"></i> نوع العلاج</label>
+                        <select id="treatment-type" class="form-control" required>
+                            <option value="">اختر نوع العلاج...</option>
+                            <option value="حشوة">حشوة</option>
+                            <option value="تنظيف">تنظيف</option>
+                            <option value="قلع">قلع</option>
+                            <option value="تقويم">تقويم</option>
+                            <option value="تركيبة">تركيبة</option>
+                            <option value="علاج عصب">علاج عصب</option>
+                            <option value="تبييض">تبييض</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
                     </div>
-                    <div class="radio-option">
-                        <input type="radio" id="socialStatusDivorced" name="socialStatus" value="مطلق">
-                        <label for="socialStatusDivorced">مطلق</label>
+                    
+                    <div class="form-group">
+                        <label for="treatment-date"><i class="far fa-calendar-alt" style="margin-left: 5px;"></i> تاريخ العلاج</label>
+                        <input type="date" id="treatment-date" class="form-control" required>
                     </div>
                 </div>
-                <div class="error-message" id="socialStatusError">يجب اختيار الحالة الاجتماعية</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="parentPhone">رقم هاتف الأب أو الأم <span class="required">*</span></label>
-                <input type="tel" id="parentPhone" class="form-control" required pattern="[0-9]{8,15}">
-                <div class="error-message" id="parentPhoneError">يجب إدخال رقم هاتف صحيح (8-15 رقم)</div>
-            </div>
-            
-            <div class="form-group" id="guardianGroup" style="display: none;">
-                <label for="guardianName">اسم الوصي في حالة غياب الولي</label>
-                <input type="text" id="guardianName" class="form-control">
-            </div>
-            
-            <!-- معلومات طبية -->
-            <h3 class="section-title">معلومات طبية</h3>
-            
-            <div class="form-group">
-                <label>هل ابنكم مريض؟ <span class="required">*</span></label>
-                <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" id="isSickYes" name="isSick" value="نعم" required>
-                        <label for="isSickYes">نعم</label>
+                
+                <!-- مخطط الأسنان -->
+                <div class="teeth-chart">
+                    <h3 class="teeth-title"><i class="fas fa-tooth" style="margin-left: 5px;"></i> تحديد الأسنان المعالجة</h3>
+                    
+                    <div class="teeth-section">
+                        <h4 class="teeth-section-title">الفك العلوي</h4>
+                        <div class="teeth-row">
+                            <div class="tooth" data-number="18"><span class="tooth-number">18</span></div>
+                            <div class="tooth" data-number="17"><span class="tooth-number">17</span></div>
+                            <div class="tooth" data-number="16"><span class="tooth-number">16</span></div>
+                            <div class="tooth" data-number="15"><span class="tooth-number">15</span></div>
+                            <div class="tooth" data-number="14"><span class="tooth-number">14</span></div>
+                            <div class="tooth" data-number="13"><span class="tooth-number">13</span></div>
+                            <div class="tooth" data-number="12"><span class="tooth-number">12</span></div>
+                            <div class="tooth" data-number="11"><span class="tooth-number">11</span></div>
+                        </div>
+                        <div class="teeth-row">
+                            <div class="tooth" data-number="21"><span class="tooth-number">21</span></div>
+                            <div class="tooth" data-number="22"><span class="tooth-number">22</span></div>
+                            <div class="tooth" data-number="23"><span class="tooth-number">23</span></div>
+                            <div class="tooth" data-number="24"><span class="tooth-number">24</span></div>
+                            <div class="tooth" data-number="25"><span class="tooth-number">25</span></div>
+                            <div class="tooth" data-number="26"><span class="tooth-number">26</span></div>
+                            <div class="tooth" data-number="27"><span class="tooth-number">27</span></div>
+                            <div class="tooth" data-number="28"><span class="tooth-number">28</span></div>
+                        </div>
                     </div>
-                    <div class="radio-option">
-                        <input type="radio" id="isSickNo" name="isSick" value="لا">
-                        <label for="isSickNo">لا</label>
+                    
+                    <div class="teeth-section">
+                        <h4 class="teeth-section-title">الفك السفلي</h4>
+                        <div class="teeth-row">
+                            <div class="tooth" data-number="48"><span class="tooth-number">48</span></div>
+                            <div class="tooth" data-number="47"><span class="tooth-number">47</span></div>
+                            <div class="tooth" data-number="46"><span class="tooth-number">46</span></div>
+                            <div class="tooth" data-number="45"><span class="tooth-number">45</span></div>
+                            <div class="tooth" data-number="44"><span class="tooth-number">44</span></div>
+                            <div class="tooth" data-number="43"><span class="tooth-number">43</span></div>
+                            <div class="tooth" data-number="42"><span class="tooth-number">42</span></div>
+                            <div class="tooth" data-number="41"><span class="tooth-number">41</span></div>
+                        </div>
+                        <div class="teeth-row">
+                            <div class="tooth" data-number="31"><span class="tooth-number">31</span></div>
+                            <div class="tooth" data-number="32"><span class="tooth-number">32</span></div>
+                            <div class="tooth" data-number="33"><span class="tooth-number">33</span></div>
+                            <div class="tooth" data-number="34"><span class="tooth-number">34</span></div>
+                            <div class="tooth" data-number="35"><span class="tooth-number">35</span></div>
+                            <div class="tooth" data-number="36"><span class="tooth-number">36</span></div>
+                            <div class="tooth" data-number="37"><span class="tooth-number">37</span></div>
+                            <div class="tooth" data-number="38"><span class="tooth-number">38</span></div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="treated-teeth" name="treated-teeth">
+                </div>
+                
+                <div class="form-group">
+                    <label for="treatment-notes"><i class="far fa-sticky-note" style="margin-left: 5px;"></i> ملاحظات العلاج</label>
+                    <textarea id="treatment-notes" class="form-control" rows="3" placeholder="أي ملاحظات إضافية عن العلاج..."></textarea>
+                </div>
+                
+                <!-- قسم الوصفات الطبية -->
+                <div class="prescription-section">
+                    <h3 class="card-title"><i class="fas fa-prescription-bottle-alt" style="color: var(--primary);"></i> الوصفة الطبية</h3>
+                    
+                    <div id="medications-container">
+                        <!-- سيتم إضافة الأدوية هنا -->
+                    </div>
+                    
+                    <div class="add-medication">
+                        <button type="button" id="add-medication" class="btn btn-pink">
+                            <i class="fas fa-plus-circle"></i> إضافة دواء
+                        </button>
                     </div>
                 </div>
-                <div class="error-message" id="isSickError">يجب اختيار الإجابة</div>
-            </div>
+                
+                <div class="action-buttons">
+                    <button type="button" id="save-treatment" class="btn btn-primary">
+                        <i class="fas fa-save"></i> حفظ العلاج
+                    </button>
+                    <button type="button" id="update-treatment" class="btn btn-warning" style="display: none;">
+                        <i class="fas fa-sync-alt"></i> تحديث العلاج
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> إعادة تعيين
+                    </button>
+                    <button type="button" id="cancel-edit" class="btn btn-danger" style="display: none;">
+                        <i class="fas fa-times"></i> إلغاء التعديل
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-history" style="color: var(--primary);"></i> سجل العلاجات</h2>
             
-            <div class="form-group" id="sicknessTypeGroup" style="display: none;">
-                <label for="sicknessType">إذا كان مريض، ما نوع المرض</label>
-                <input type="text" id="sicknessType" class="form-control">
-            </div>
-            
-            <div class="form-group">
-                <label>هل يتناول أدوية؟ <span class="required">*</span></label>
-                <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" id="takesMedicineYes" name="takesMedicine" value="نعم" required>
-                        <label for="takesMedicineYes">نعم</label>
+            <div style="margin-bottom: 20px;">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <input type="text" id="search-treatments" class="form-control" placeholder="ابحث باسم المريض أو نوع العلاج...">
                     </div>
-                    <div class="radio-option">
-                        <input type="radio" id="takesMedicineNo" name="takesMedicine" value="لا">
-                        <label for="takesMedicineNo">لا</label>
+                    <div class="form-group">
+                        <input type="date" id="filter-date" class="form-control">
                     </div>
                 </div>
-                <div class="error-message" id="takesMedicineError">يجب اختيار الإجابة</div>
             </div>
             
-            <div class="form-group select-group">
-                <label for="bloodType">نوع الزمرة الدموية</label>
-                <select id="bloodType" class="form-control">
-                    <option value="">-- اختر الزمرة الدموية --</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                </select>
+            <div id="treatments-list">
+                <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل سجل العلاجات...</p>
             </div>
-            
-            <div class="form-group">
-                <label for="notes">ملاحظات إضافية (اختياري)</label>
-                <textarea id="notes" class="form-control" rows="2"></textarea>
-            </div>
-            
-            <button type="submit" class="submit-btn" id="submitBtn">تسجيل المتمدرس</button>
-            
-            <p class="form-note">سيتم مراجعة طلب التسجيل وإعلامكم بالنتيجة خلال 3 أيام عمل</p>
-            
-            <!-- قسم استعادة الاستمارة -->
-            <div class="recovery-section" id="recoverySection">
-                <p>إذا نسيت تحميل الاستمارة، يمكنك استعادتها بإدخال رقم التسجيل:</p>
-                <input type="text" id="recoveryNumber" class="form-control" placeholder="أدخل رقم التسجيل">
-                <button class="recovery-btn" id="recoveryBtn">استعادة الاستمارة</button>
-                <p id="recoveryMessage" style="display:none; color:var(--primary-color); margin-top:10px;"></p>
-            </div>
-        </form>
-    </main>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <i class="fas fa-check-circle modal-icon success-icon"></i>
-            <h3 class="modal-title">تم التسجيل بنجاح</h3>
-            <p class="modal-message" id="successMessage"></p>
-            <button class="modal-btn" id="successBtn">حسناً</button>
-            <a href="#" class="download-btn" id="downloadBtn" style="display: none;">
-                <i class="fas fa-download"></i> تحميل استمارة التسجيل
-            </a>
-            <button class="print-btn" id="printBtn" style="display: none;">
-                <i class="fas fa-print"></i> طباعة الاستمارة
-            </button>
         </div>
     </div>
-
-    <!-- Error Modal -->
-    <div class="modal" id="errorModal">
+    
+    <!-- نافذة تقرير العلاج -->
+    <div id="report-modal" class="modal">
         <div class="modal-content">
-            <i class="fas fa-times-circle modal-icon error-icon"></i>
-            <h3 class="modal-title">حدث خطأ</h3>
-            <p class="modal-message" id="errorMessage"></p>
-            <button class="modal-btn" id="errorBtn">حسناً</button>
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-file-medical-alt" style="color: var(--primary);"></i> تقرير العلاج</h3>
+                <button class="close-btn" onclick="closeReportModal()">&times;</button>
+            </div>
+            <div id="report-content" class="report">
+                <!-- سيتم تعبئته بواسطة JavaScript -->
+            </div>
+            <div class="action-buttons no-print" style="justify-content: center; margin-top: 20px;">
+                <button onclick="printReport()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> طباعة التقرير
+                </button>
+                <button onclick="closeReportModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إغلاق
+                </button>
+            </div>
         </div>
     </div>
-
-    <footer>
-        <div class="copyright">
-            <p>جميع الحقوق محفوظة &copy; المجمع القرآني حمزة بن عبدالمطلب <span id="year"></span></p>
-        </div>
-    </footer>
-
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-
+    
+    <!-- مكتبات JavaScript -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    
     <script>
+        // تهيئة Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyAzx-JlJBJxtVZT2cXDtJiHbs6s9K-3hEY",
-            authDomain: "tahdiri-dc608.firebaseapp.com",
-            databaseURL: "https://tahdiri-dc608-default-rtdb.firebaseio.com",
-            projectId: "tahdiri-dc608",
-            storageBucket: "tahdiri-dc608.appspot.com",
-            messagingSenderId: "795586531700",
-            appId: "1:795586531700:web:d693fd56f4bed6aed4dc21",
-            measurementId: "G-H57ECZPTT7"
+            databaseURL: "https://watine-b8878-default-rtdb.firebaseio.com/"
         };
-
-        const app = firebase.initializeApp(firebaseConfig);
+        
+        firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const { jsPDF } = window.jspdf;
-
+        
+        // متغيرات التطبيق
+        let patients = [];
+        let treatments = [];
+        let isEditing = false;
+        let currentTreatmentId = null;
+        let treatedTeeth = [];
+        let medications = [];
+        
+        // عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('year').textContent = new Date().getFullYear();
+            // تعيين تاريخ اليوم كقيمة افتراضية
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('treatment-date').value = today;
             
-            const form = document.getElementById('studentRegistration');
-            const submitBtn = document.getElementById('submitBtn');
-            const formSpinner = document.getElementById('formSpinner');
-            const successModal = document.getElementById('successModal');
-            const errorModal = document.getElementById('errorModal');
-            const successBtn = document.getElementById('successBtn');
-            const errorBtn = document.getElementById('errorBtn');
-            const successMessage = document.getElementById('successMessage');
-            const errorMessage = document.getElementById('errorMessage');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const printBtn = document.getElementById('printBtn');
-            const recoverySection = document.getElementById('recoverySection');
-            const recoveryBtn = document.getElementById('recoveryBtn');
-            const recoveryNumber = document.getElementById('recoveryNumber');
-            const recoveryMessage = document.getElementById('recoveryMessage');
+            // تهيئة Select2 لبحث المرضى
+            $('#patient-select').select2({
+                placeholder: "ابحث عن مريض...",
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "لا توجد نتائج";
+                    }
+                }
+            });
             
-            let studentData = null;
-            let registrationNumber = null;
-            let registrationData = {};
-
-            // إظهار/إخفاء الحقول الشرطية
-            document.querySelectorAll('input[name="socialStatus"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    document.getElementById('guardianGroup').style.display = 
-                        (this.value === 'يتيم' || this.value === 'مطلق') ? 'block' : 'none';
-                });
-            });
-
-            document.querySelectorAll('input[name="isSick"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    document.getElementById('sicknessTypeGroup').style.display = 
-                        this.value === 'نعم' ? 'block' : 'none';
-                });
-            });
-
-            // التحقق من صحة البيانات
-            document.getElementById('birthDate').addEventListener('change', validateBirthDate);
-            document.getElementById('parentPhone').addEventListener('input', validatePhone);
-
-            function validateBirthDate() {
-                const input = document.getElementById('birthDate');
-                const error = document.getElementById('birthDateError');
-                const selectedDate = new Date(input.value);
-                const selectedYear = selectedDate.getFullYear();
-                
-                if (selectedYear !== 2020 || isNaN(selectedYear)) {
-                    error.style.display = 'block';
-                    input.setCustomValidity('يجب أن يكون تاريخ الميلاد في سنة 2020');
-                    return false;
-                } else {
-                    error.style.display = 'none';
-                    input.setCustomValidity('');
-                    return true;
-                }
-            }
-
-            function validatePhone() {
-                const input = document.getElementById('parentPhone');
-                const error = document.getElementById('parentPhoneError');
-                const isValid = input.checkValidity();
-                
-                error.style.display = isValid ? 'none' : 'block';
-                return isValid;
-            }
-
-            function validateRequiredFields() {
-                let isValid = true;
-                const requiredFields = ['firstName', 'lastName', 'birthPlace', 'fatherName', 'motherName', 'address'];
-                
-                requiredFields.forEach(field => {
-                    const input = document.getElementById(field);
-                    const error = document.getElementById(field + 'Error');
-                    if (!input.value.trim()) {
-                        error.style.display = 'block';
-                        isValid = false;
-                    } else {
-                        error.style.display = 'none';
-                    }
-                });
-
-                const requiredRadios = [
-                    {name: 'socialStatus', errorId: 'socialStatusError'},
-                    {name: 'isSick', errorId: 'isSickError'},
-                    {name: 'takesMedicine', errorId: 'takesMedicineError'}
-                ];
-                
-                requiredRadios.forEach(radio => {
-                    const checked = document.querySelector(`input[name="${radio.name}"]:checked`);
-                    const error = document.getElementById(radio.errorId);
-                    if (!checked) {
-                        error.style.display = 'block';
-                        isValid = false;
-                    } else {
-                        error.style.display = 'none';
-                    }
-                });
-
-                return isValid;
-            }
-
-            // إظهار/إخفاء النوافذ المنبثقة
-            function showSuccessModal() {
-                successModal.style.display = 'flex';
-            }
-
-            function showErrorModal() {
-                errorModal.style.display = 'flex';
-            }
-
-            successBtn.addEventListener('click', () => {
-                successModal.style.display = 'none';
-                recoverySection.style.display = 'block';
-            });
-
-            errorBtn.addEventListener('click', () => errorModal.style.display = 'none');
-
-            window.addEventListener('click', function(event) {
-                if (event.target === successModal) successModal.style.display = 'none';
-                if (event.target === errorModal) errorModal.style.display = 'none';
-            });
-
-            // إنشاء ملف PDF
-            function generateRegistrationPDF(data = studentData, regNumber = registrationNumber) {
-                return new Promise((resolve) => {
-                    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                    
-                    // إضافة الخط العربي
-                    doc.addFont('https://cdn.jsdelivr.net/gh/arabic-fonts/amiri-font@1.0.0/Amiri-Regular.ttf', 'Amiri', 'normal');
-                    doc.addFont('https://cdn.jsdelivr.net/gh/arabic-fonts/amiri-font@1.0.0/Amiri-Bold.ttf', 'Amiri', 'bold');
-                    doc.setFont('Amiri');
-
-                    // رأس الصفحة
-                    const logoUrl = 'https://i.ibb.co/jZrxhFsf/1-min.png';
-                    doc.addImage(logoUrl, 'PNG', 15, 15, 40, 40);
-                    
-                    doc.setFontSize(18);
-                    doc.setTextColor(26, 77, 46);
-                    doc.setFont('Amiri', 'bold');
-                    doc.text('المجمع القرآني حمزة بن عبدالمطلب', 105, 25, { align: 'center' });
-                    doc.setFontSize(16);
-                    doc.text('استمارة التسجيل الأولية', 105, 35, { align: 'center' });
-                    
-                    doc.setFontSize(10);
-                    doc.setTextColor(100);
-                    doc.text(`رقم التسجيل: ${regNumber}`, 190, 20, { align: 'right' });
-                    doc.text(`تاريخ التسجيل: ${new Date(data.registrationDate).toLocaleDateString('ar-EG')}`, 190, 30, { align: 'right' });
-                    
-                    doc.setDrawColor(214, 175, 55);
-                    doc.setLineWidth(0.5);
-                    doc.line(15, 45, 195, 45);
-                    
-                    // معلومات الطالب
-                    doc.setFontSize(12);
-                    doc.setTextColor(0);
-                    doc.setFont('Amiri', 'bold');
-                    doc.text('معلومات المتمدرس:', 15, 55);
-                    doc.setFont('Amiri', 'normal');
-                    
-                    const studentInfo = [
-                        ['الاسم الكامل:', `${data.firstName} ${data.lastName}`],
-                        ['تاريخ الميلاد:', formatArabicDate(data.birthDate)],
-                        ['مكان الميلاد:', data.birthPlace],
-                        ['اسم الأب:', data.fatherName],
-                        ['اسم الأم:', data.motherName],
-                        ['العنوان:', data.address],
-                        ['الحالة الاجتماعية:', data.socialStatus],
-                        ['رقم هاتف ولي الأمر:', data.parentPhone],
-                        ['الوصي (إن وجد):', data.guardianName || 'لا يوجد']
-                    ];
-                    
-                    doc.autoTable({
-                        startY: 60,
-                        body: studentInfo,
-                        theme: 'grid',
-                        headStyles: { fillColor: [26, 77, 46], textColor: 255, font: 'Amiri', fontStyle: 'bold', halign: 'right' },
-                        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50, font: 'Amiri' }, 1: { font: 'Amiri' } },
-                        margin: { right: 15 },
-                        styles: { font: 'Amiri', fontStyle: 'normal', halign: 'right', cellPadding: 3 }
-                    });
-                    
-                    // المعلومات الطبية
-                    doc.setFont('Amiri', 'bold');
-                    doc.text('المعلومات الطبية:', 15, doc.autoTable.previous.finalY + 10);
-                    doc.setFont('Amiri', 'normal');
-                    
-                    const medicalInfo = [
-                        ['الحالة الصحية:', data.isSick === 'نعم' ? `مريض (${data.sicknessType || 'غير محدد'})` : 'سليم'],
-                        ['يتناول أدوية:', data.takesMedicine],
-                        ['الزمرة الدموية:', data.bloodType || 'غير محدد'],
-                        ['ملاحظات إضافية:', data.notes || 'لا يوجد']
-                    ];
-                    
-                    doc.autoTable({
-                        startY: doc.autoTable.previous.finalY + 15,
-                        body: medicalInfo,
-                        theme: 'grid',
-                        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50, font: 'Amiri' }, 1: { font: 'Amiri' } },
-                        margin: { right: 15 },
-                        styles: { font: 'Amiri', fontStyle: 'normal', halign: 'right', cellPadding: 3 }
-                    });
-                    
-                    // قسم الإدارة
-                    const footerY = doc.autoTable.previous.finalY + 20;
-                    doc.setDrawColor(214, 175, 55);
-                    doc.setLineWidth(0.5);
-                    doc.line(15, footerY, 195, footerY);
-                    
-                    doc.setFont('Amiri', 'bold');
-                    doc.text('قسم الإدارة:', 15, footerY + 10);
-                    doc.setFont('Amiri', 'normal');
-                    
-                    const adminInfo = [
-                        ['حقوق اشتراك الولي السنوية:', '________________________'],
-                        ['مصادقة الإدارة:', '________________________'],
-                        ['إمضاء الولي على صحة المعلومات:', '________________________'],
-                        ['تاريخ:', '________________________']
-                    ];
-                    
-                    doc.autoTable({
-                        startY: footerY + 15,
-                        body: adminInfo,
-                        theme: 'grid',
-                        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 70, font: 'Amiri' }, 1: { font: 'Amiri', cellWidth: 70 } },
-                        margin: { right: 15 },
-                        styles: { font: 'Amiri', fontStyle: 'normal', halign: 'right', cellPadding: 5 }
-                    });
-                    
-                    // تذييل الصفحة
-                    doc.setFontSize(10);
-                    doc.setTextColor(100);
-                    doc.text('شكراً لتسجيلكم في المجمع القرآني حمزة بن عبدالمطلب', 105, 285, { align: 'center' });
-                    doc.text('سيتم التواصل معكم خلال 3 أيام عمل', 105, 290, { align: 'center' });
-                    
-                    resolve(doc);
-                });
-            }
-
-            function formatArabicDate(dateString) {
-                if (!dateString) return '';
-                const date = new Date(dateString);
-                return date.toLocaleDateString('ar-EG');
-            }
-
-            // إرسال النموذج
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const isBirthDateValid = validateBirthDate();
-                const isPhoneValid = validatePhone();
-                const isRequiredFieldsValid = validateRequiredFields();
-                
-                if (isBirthDateValid && isPhoneValid && isRequiredFieldsValid) {
-                    formSpinner.style.display = 'flex';
-                    submitBtn.disabled = true;
-                    
-                    studentData = {
-                        firstName: document.getElementById('firstName').value.trim(),
-                        lastName: document.getElementById('lastName').value.trim(),
-                        birthDate: document.getElementById('birthDate').value,
-                        birthPlace: document.getElementById('birthPlace').value.trim(),
-                        fatherName: document.getElementById('fatherName').value.trim(),
-                        motherName: document.getElementById('motherName').value.trim(),
-                        address: document.getElementById('address').value.trim(),
-                        socialStatus: document.querySelector('input[name="socialStatus"]:checked').value,
-                        parentPhone: document.getElementById('parentPhone').value.trim(),
-                        isSick: document.querySelector('input[name="isSick"]:checked').value,
-                        sicknessType: document.getElementById('sicknessType').value.trim(),
-                        takesMedicine: document.querySelector('input[name="takesMedicine"]:checked').value,
-                        bloodType: document.getElementById('bloodType').value,
-                        guardianName: document.getElementById('guardianName').value.trim(),
-                        notes: document.getElementById('notes').value.trim(),
-                        registrationDate: new Date().toISOString(),
-                        status: 'pending',
-                        registrationNumber: `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`
-                    };
-                    
-                    registrationNumber = studentData.registrationNumber;
-                    
-                    const studentId = studentData.firstName + '_' + studentData.lastName + '_' + new Date().getTime();
-                    
-                    // حفظ بيانات التسجيل محلياً للاسترجاع
-                    registrationData[registrationNumber] = studentData;
-                    
-                    // حفظ في localStorage للاسترجاع
-                    localStorage.setItem('lastRegistration', JSON.stringify({
-                        number: registrationNumber,
-                        data: studentData
-                    }));
-                    
-                    database.ref('students/' + studentId).set(studentData)
-                        .then(() => {
-                            formSpinner.style.display = 'none';
-                            const studentName = studentData.firstName + ' ' + studentData.lastName;
-                            successMessage.innerHTML = `
-                                تم تسجيل الطالب <strong>${studentName}</strong> بنجاح<br>
-                                رقم التسجيل: <strong>${registrationNumber}</strong>
-                                <br><small>الرجاء الاحتفاظ برقم التسجيل لاستعادة الاستمارة لاحقاً</small>
-                            `;
-                            
-                            // تفعيل أزرار التحميل والطباعة
-                            downloadBtn.style.display = 'inline-block';
-                            printBtn.style.display = 'inline-block';
-                            
-                            // إعادة تعيين معالجات الأحداث لتجنب التراكم
-                            downloadBtn.onclick = null;
-                            printBtn.onclick = null;
-                            
-                            downloadBtn.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
-                                generateRegistrationPDF(studentData, registrationNumber)
-                                    .then(doc => {
-                                        doc.save(`استمارة_تسجيل_${studentData.firstName}_${studentData.lastName}.pdf`);
-                                        downloadBtn.innerHTML = '<i class="fas fa-download"></i> تحميل استمارة التسجيل';
-                                    })
-                                    .catch(error => {
-                                        console.error('خطأ في التحميل:', error);
-                                        alert('حدث خطأ أثناء إنشاء ملف PDF');
-                                        downloadBtn.innerHTML = '<i class="fas fa-download"></i> تحميل استمارة التسجيل';
-                                    });
-                            });
-                            
-                            printBtn.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                printBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير للطباعة...';
-                                generateRegistrationPDF(studentData, registrationNumber)
-                                    .then(doc => {
-                                        const blob = doc.output('blob');
-                                        const url = URL.createObjectURL(blob);
-                                        const iframe = document.createElement('iframe');
-                                        iframe.style.display = 'none';
-                                        iframe.src = url;
-                                        document.body.appendChild(iframe);
-                                        iframe.onload = () => {
-                                            iframe.contentWindow.print();
-                                            printBtn.innerHTML = '<i class="fas fa-print"></i> طباعة الاستمارة';
-                                        };
-                                    })
-                                    .catch(error => {
-                                        console.error('خطأ في الطباعة:', error);
-                                        alert('حدث خطأ أثناء التحضير للطباعة');
-                                        printBtn.innerHTML = '<i class="fas fa-print"></i> طباعة الاستمارة';
-                                    });
-                            });
-                            
-                            showSuccessModal();
-                            form.reset();
-                            submitBtn.disabled = false;
-                            document.getElementById('guardianGroup').style.display = 'none';
-                            document.getElementById('sicknessTypeGroup').style.display = 'none';
-                        })
-                        .catch((error) => {
-                            formSpinner.style.display = 'none';
-                            submitBtn.disabled = false;
-                            errorMessage.textContent = 'حدث خطأ أثناء حفظ البيانات: ' + error.message;
-                            showErrorModal();
-                        });
-                } else {
-                    const firstError = document.querySelector('.error-message[style="display: block;"]');
-                    if (firstError) {
-                        firstError.previousElementSibling.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    }
-                }
-            });
-
-            // استعادة الاستمارة
-            recoveryBtn.addEventListener('click', function() {
-                const regNumber = recoveryNumber.value.trim();
-                if (!regNumber) {
-                    recoveryMessage.textContent = 'الرجاء إدخال رقم التسجيل';
-                    recoveryMessage.style.display = 'block';
-                    recoveryMessage.style.color = 'var(--error-color)';
-                    return;
-                }
-                
-                recoveryBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري البحث...';
-                
-                // البحث في البيانات المحفوظة محلياً
-                if (registrationData[regNumber]) {
-                    generateRegistrationPDF(registrationData[regNumber], regNumber)
-                        .then(doc => {
-                            doc.save(`استمارة_تسجيل_${registrationData[regNumber].firstName}_${registrationData[regNumber].lastName}.pdf`);
-                            recoveryMessage.textContent = 'تم تحميل الاستمارة بنجاح';
-                            recoveryMessage.style.display = 'block';
-                            recoveryMessage.style.color = 'var(--success-color)';
-                            recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                        })
-                        .catch(error => {
-                            recoveryMessage.textContent = 'حدث خطأ أثناء إنشاء الملف';
-                            recoveryMessage.style.display = 'block';
-                            recoveryMessage.style.color = 'var(--error-color)';
-                            recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                        });
-                    return;
-                }
-                
-                // البحث في localStorage
-                const lastRegistration = JSON.parse(localStorage.getItem('lastRegistration'));
-                if (lastRegistration && lastRegistration.number === regNumber) {
-                    generateRegistrationPDF(lastRegistration.data, regNumber)
-                        .then(doc => {
-                            doc.save(`استمارة_تسجيل_${lastRegistration.data.firstName}_${lastRegistration.data.lastName}.pdf`);
-                            recoveryMessage.textContent = 'تم تحميل الاستمارة بنجاح';
-                            recoveryMessage.style.display = 'block';
-                            recoveryMessage.style.color = 'var(--success-color)';
-                            recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                        })
-                        .catch(error => {
-                            recoveryMessage.textContent = 'حدث خطأ أثناء إنشاء الملف';
-                            recoveryMessage.style.display = 'block';
-                            recoveryMessage.style.color = 'var(--error-color)';
-                            recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                        });
-                    return;
-                }
-                
-                // البحث في قاعدة البيانات إذا لم تكن محفوظة محلياً
-                database.ref('students').orderByChild('registrationNumber').equalTo(regNumber).once('value')
-                    .then(snapshot => {
-                        if (snapshot.exists()) {
-                            snapshot.forEach(childSnapshot => {
-                                const data = childSnapshot.val();
-                                generateRegistrationPDF(data, regNumber)
-                                    .then(doc => {
-                                        doc.save(`استمارة_تسجيل_${data.firstName}_${data.lastName}.pdf`);
-                                        recoveryMessage.textContent = 'تم تحميل الاستمارة بنجاح';
-                                        recoveryMessage.style.display = 'block';
-                                        recoveryMessage.style.color = 'var(--success-color)';
-                                        recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                                    })
-                                    .catch(error => {
-                                        recoveryMessage.textContent = 'حدث خطأ أثناء إنشاء الملف';
-                                        recoveryMessage.style.display = 'block';
-                                        recoveryMessage.style.color = 'var(--error-color)';
-                                        recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                                    });
-                            });
-                        } else {
-                            recoveryMessage.textContent = 'لم يتم العثور على رقم التسجيل';
-                            recoveryMessage.style.display = 'block';
-                            recoveryMessage.style.color = 'var(--error-color)';
-                            recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                        }
-                    })
-                    .catch(error => {
-                        recoveryMessage.textContent = 'حدث خطأ أثناء البحث عن الاستمارة';
-                        recoveryMessage.style.display = 'block';
-                        recoveryMessage.style.color = 'var(--error-color)';
-                        recoveryBtn.innerHTML = 'استعادة الاستمارة';
-                    });
-            });
-
-            // تحديد نطاق تاريخ الميلاد
-            const maxDate = new Date('2020-12-31');
-            const minDate = new Date('2020-01-01');
-            document.getElementById('birthDate').max = maxDate.toISOString().split('T')[0];
-            document.getElementById('birthDate').min = minDate.toISOString().split('T')[0];
+            // تحميل قائمة المرضى
+            loadPatients();
+            
+            // تحميل سجل العلاجات
+            loadTreatments();
+            
+            // إدارة الأسنان المعالجة
+            setupTeethSelection();
+            
+            // إدارة الوصفات الطبية
+            setupMedications();
+            
+            // حفظ العلاج
+            document.getElementById('save-treatment').addEventListener('click', saveTreatment);
+            
+            // تحديث العلاج
+            document.getElementById('update-treatment').addEventListener('click', updateTreatment);
+            
+            // إلغاء التعديل
+            document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
+            
+            // البحث والتصفية
+            document.getElementById('search-treatments').addEventListener('input', filterTreatments);
+            document.getElementById('filter-date').addEventListener('change', filterTreatments);
         });
+        
+        // تحميل قائمة المرضى
+        function loadPatients() {
+            $('#patient-select').html('<option value="">جاري تحميل المرضى...</option>');
+            
+            database.ref('/Watine/patients').once('value')
+                .then(snapshot => {
+                    patients = [];
+                    $('#patient-select').empty().append('<option value="">اختر المريض...</option>');
+                    
+                    const patientsData = snapshot.val();
+                    if (patientsData) {
+                        Object.entries(patientsData).forEach(([id, patient]) => {
+                            if (patient.name && patient.phone) {
+                                const option = new Option(`${patient.name} - ${patient.phone}`, id);
+                                $('#patient-select').append(option);
+                                patients.push({ id, ...patient });
+                            }
+                        });
+                    }
+                    $('#patient-select').trigger('change');
+                })
+                .catch(error => {
+                    console.error("Error loading patients:", error);
+                    $('#patient-select').html('<option value="">حدث خطأ في تحميل المرضى</option>');
+                });
+        }
+        
+        // تحميل سجل العلاجات
+        function loadTreatments() {
+            const treatmentsList = document.getElementById('treatments-list');
+            treatmentsList.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل سجل العلاجات...</p>';
+            
+            database.ref('/Watine/treatments').orderByChild('date').once('value')
+                .then(snapshot => {
+                    treatments = [];
+                    treatmentsList.innerHTML = '';
+                    
+                    const treatmentsData = snapshot.val();
+                    if (treatmentsData) {
+                        Object.entries(treatmentsData).forEach(([id, treatment]) => {
+                            if (treatment.patientId && treatment.type) {
+                                treatments.push({ id, ...treatment });
+                            }
+                        });
+                        
+                        // عرض العلاجات بعد الفرز من الأحدث إلى الأقدم
+                        displayTreatments(treatments.reverse());
+                    } else {
+                        treatmentsList.innerHTML = '<p style="text-align: center;">لا توجد علاجات مسجلة بعد</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading treatments:", error);
+                    treatmentsList.innerHTML = '<p style="text-align: center;" class="error">حدث خطأ في تحميل العلاجات</p>';
+                });
+        }
+        
+        // عرض العلاجات في القائمة
+        function displayTreatments(treatmentsToDisplay) {
+            const treatmentsList = document.getElementById('treatments-list');
+            
+            if (treatmentsToDisplay.length === 0) {
+                treatmentsList.innerHTML = '<p style="text-align: center;">لا توجد علاجات تطابق معايير البحث</p>';
+                return;
+            }
+            
+            treatmentsList.innerHTML = '';
+            
+            treatmentsToDisplay.forEach(treatment => {
+                const patient = patients.find(p => p.id === treatment.patientId) || {
+                    name: 'مريض غير معروف',
+                    phone: 'غير متوفر'
+                };
+                
+                const treatmentDate = treatment.date ? formatDateWithForeignNumbers(new Date(treatment.date)) : 'غير محدد';
+                const treatedTeethList = treatment.treatedTeeth ? treatment.treatedTeeth.split(',') : [];
+                
+                const treatmentElement = document.createElement('div');
+                treatmentElement.className = 'treatment-card';
+                treatmentElement.innerHTML = `
+                    <div class="treatment-header">
+                        <div class="treatment-patient">
+                            <div class="patient-avatar">
+                                ${patient.name.charAt(0)}
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0;">${patient.name}</h4>
+                                <small>${patient.phone}</small>
+                            </div>
+                        </div>
+                        <div class="treatment-date">
+                            <i class="far fa-calendar-alt"></i> ${treatmentDate}
+                        </div>
+                    </div>
+                    
+                    <div class="treatment-details">
+                        <div class="treatment-type">
+                            <i class="fas fa-teeth"></i> نوع العلاج: ${treatment.type}
+                        </div>
+                        
+                        ${treatedTeethList.length > 0 ? `
+                            <div>
+                                <strong>الأسنان المعالجة:</strong>
+                                <div class="treated-teeth-list">
+                                    ${treatedTeethList.map(tooth => `
+                                        <span class="treated-tooth">${tooth}</span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${treatment.notes ? `
+                            <div class="treatment-notes">
+                                <strong>ملاحظات:</strong> ${treatment.notes}
+                            </div>
+                        ` : ''}
+                        
+                        ${treatment.medications && treatment.medications.length > 0 ? `
+                            <div class="medication-list">
+                                <strong>الوصفة الطبية:</strong>
+                                ${treatment.medications.map(med => `
+                                    <div class="medication-list-item">
+                                        <span>${med.name} (${med.dose} - ${med.frequency})</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="treatment-actions no-print">
+                        <button onclick="editTreatment('${treatment.id}')" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> تعديل
+                        </button>
+                        <button onclick="deleteTreatment('${treatment.id}')" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                        <button onclick="generateReport('${treatment.id}')" class="btn btn-success btn-sm">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                `;
+                
+                treatmentsList.appendChild(treatmentElement);
+            });
+        }
+        
+        // إعداد اختيار الأسنان
+        function setupTeethSelection() {
+            const teeth = document.querySelectorAll('.tooth');
+            teeth.forEach(tooth => {
+                tooth.addEventListener('click', function() {
+                    const toothNumber = this.getAttribute('data-number');
+                    this.classList.toggle('treated');
+                    
+                    if (this.classList.contains('treated')) {
+                        if (!treatedTeeth.includes(toothNumber)) {
+                            treatedTeeth.push(toothNumber);
+                        }
+                    } else {
+                        treatedTeeth = treatedTeeth.filter(num => num !== toothNumber);
+                    }
+                    
+                    document.getElementById('treated-teeth').value = treatedTeeth.join(',');
+                });
+            });
+        }
+        
+        // إعداد الوصفات الطبية
+        function setupMedications() {
+            // إضافة دواء جديد
+            document.getElementById('add-medication').addEventListener('click', function() {
+                addMedicationField();
+            });
+            
+            // إضافة حقل دواء افتراضي عند التحميل
+            addMedicationField();
+        }
+        
+        // إضافة حقل دواء جديد
+        function addMedicationField(medication = { name: '', dose: '', frequency: '' }) {
+            const container = document.getElementById('medications-container');
+            const medId = Date.now();
+            
+            const medElement = document.createElement('div');
+            medElement.className = 'medication-item';
+            medElement.innerHTML = `
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="med-name-${medId}">اسم الدواء</label>
+                        <input type="text" id="med-name-${medId}" class="form-control" value="${medication.name}" placeholder="اسم الدواء">
+                    </div>
+                    <div class="form-group">
+                        <label for="med-dose-${medId}">الجرعة</label>
+                        <input type="text" id="med-dose-${medId}" class="form-control" value="${medication.dose}" placeholder="مثال: 500mg">
+                    </div>
+                    <div class="form-group">
+                        <label for="med-frequency-${medId}">عدد المرات</label>
+                        <input type="text" id="med-frequency-${medId}" class="form-control" value="${medication.frequency}" placeholder="مثال: 3 مرات يومياً">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeMedication(this)" style="margin-top: 10px;">
+                    <i class="fas fa-trash"></i> حذف الدواء
+                </button>
+            `;
+            
+            container.appendChild(medElement);
+        }
+        
+        // حذف دواء من القائمة
+        function removeMedication(button) {
+            if (document.querySelectorAll('.medication-item').length > 1) {
+                button.closest('.medication-item').remove();
+            } else {
+                alert('يجب أن يحتوي العلاج على دواء واحد على الأقل');
+            }
+        }
+        
+        // جمع بيانات الأدوية
+        function getMedicationsData() {
+            const medications = [];
+            const medicationItems = document.querySelectorAll('.medication-item');
+            
+            medicationItems.forEach(item => {
+                const id = item.querySelector('input').id.split('-')[2];
+                medications.push({
+                    name: document.getElementById(`med-name-${id}`).value,
+                    dose: document.getElementById(`med-dose-${id}`).value,
+                    frequency: document.getElementById(`med-frequency-${id}`).value
+                });
+            });
+            
+            return medications;
+        }
+        
+        // حفظ العلاج في قاعدة البيانات
+        function saveTreatment() {
+            const patientId = document.getElementById('patient-select').value;
+            const treatmentType = document.getElementById('treatment-type').value;
+            const date = document.getElementById('treatment-date').value;
+            const notes = document.getElementById('treatment-notes').value;
+            const treatedTeethStr = document.getElementById('treated-teeth').value;
+            const medications = getMedicationsData();
+            
+            if (!patientId || !treatmentType || !date) {
+                alert('الرجاء إدخال جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // التحقق من وجود دواء على الأقل
+            if (medications.length === 0 || medications.some(med => !med.name)) {
+                alert('الرجاء إدخال وصفة طبية تحتوي على دواء واحد على الأقل');
+                return;
+            }
+            
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) {
+                alert('المريض غير موجود');
+                return;
+            }
+            
+            const treatmentData = {
+                patientId,
+                patientName: patient.name,
+                patientPhone: patient.phone,
+                type: treatmentType,
+                date,
+                treatedTeeth: treatedTeethStr,
+                notes: notes || '',
+                medications: medications,
+                createdAt: new Date().toISOString()
+            };
+            
+            // إنشاء معرف فريد للعلاج
+            const treatmentId = database.ref().child('Watine/treatments').push().key;
+            
+            // حفظ البيانات في Firebase
+            database.ref('Watine/treatments/' + treatmentId).set(treatmentData)
+                .then(() => {
+                    alert('تم حفظ العلاج بنجاح');
+                    resetForm();
+                    loadTreatments();
+                    generateReport(treatmentId, treatmentData);
+                })
+                .catch(error => {
+                    alert('حدث خطأ أثناء حفظ العلاج: ' + error.message);
+                    console.error("Error saving treatment:", error);
+                });
+        }
+        
+        // تعديل العلاج
+        function editTreatment(treatmentId) {
+            const treatment = treatments.find(t => t.id === treatmentId);
+            if (!treatment) return;
+            
+            // حفظ معرف العلاج الحالي
+            currentTreatmentId = treatmentId;
+            isEditing = true;
+            
+            // تعبئة النموذج ببيانات العلاج
+            document.getElementById('treatment-id').value = treatmentId;
+            $('#patient-select').val(treatment.patientId).trigger('change');
+            document.getElementById('treatment-type').value = treatment.type;
+            document.getElementById('treatment-date').value = treatment.date;
+            document.getElementById('treatment-notes').value = treatment.notes || '';
+            
+            // تعبئة الأسنان المعالجة
+            treatedTeeth = treatment.treatedTeeth ? treatment.treatedTeeth.split(',') : [];
+            document.getElementById('treated-teeth').value = treatedTeeth.join(',');
+            
+            // تحديث واجهة الأسنان المعالجة
+            document.querySelectorAll('.tooth').forEach(tooth => {
+                const toothNumber = tooth.getAttribute('data-number');
+                if (treatedTeeth.includes(toothNumber)) {
+                    tooth.classList.add('treated');
+                } else {
+                    tooth.classList.remove('treated');
+                }
+            });
+            
+            // تعبئة الأدوية
+            const medContainer = document.getElementById('medications-container');
+            medContainer.innerHTML = '';
+            
+            if (treatment.medications && treatment.medications.length > 0) {
+                treatment.medications.forEach(med => {
+                    addMedicationField(med);
+                });
+            } else {
+                addMedicationField();
+            }
+            
+            // تبديل أزرار الحفظ والتحديث
+            document.getElementById('save-treatment').style.display = 'none';
+            document.getElementById('update-treatment').style.display = 'inline-flex';
+            document.getElementById('cancel-edit').style.display = 'inline-flex';
+            
+            // التمرير إلى أعلى النموذج
+            document.getElementById('treatment-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // تحديث العلاج
+        function updateTreatment() {
+            if (!currentTreatmentId) return;
+            
+            const patientId = document.getElementById('patient-select').value;
+            const treatmentType = document.getElementById('treatment-type').value;
+            const date = document.getElementById('treatment-date').value;
+            const notes = document.getElementById('treatment-notes').value;
+            const treatedTeethStr = document.getElementById('treated-teeth').value;
+            const medications = getMedicationsData();
+            
+            if (!patientId || !treatmentType || !date) {
+                alert('الرجاء إدخال جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // التحقق من وجود دواء على الأقل
+            if (medications.length === 0 || medications.some(med => !med.name)) {
+                alert('الرجاء إدخال وصفة طبية تحتوي على دواء واحد على الأقل');
+                return;
+            }
+            
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) {
+                alert('المريض غير موجود');
+                return;
+            }
+            
+            const treatmentData = {
+                patientId,
+                patientName: patient.name,
+                patientPhone: patient.phone,
+                type: treatmentType,
+                date,
+                treatedTeeth: treatedTeethStr,
+                notes: notes || '',
+                medications: medications,
+                updatedAt: new Date().toISOString()
+            };
+            
+            // تحديث البيانات في Firebase
+            database.ref('Watine/treatments/' + currentTreatmentId).update(treatmentData)
+                .then(() => {
+                    alert('تم تحديث العلاج بنجاح');
+                    resetForm();
+                    loadTreatments();
+                })
+                .catch(error => {
+                    alert('حدث خطأ أثناء تحديث العلاج: ' + error.message);
+                    console.error("Error updating treatment:", error);
+                });
+        }
+        
+        // إلغاء التعديل
+        function cancelEdit() {
+            resetForm();
+        }
+        
+        // إعادة تعيين النموذج
+        function resetForm() {
+            document.getElementById('treatment-form').reset();
+            document.getElementById('treatment-id').value = '';
+            document.getElementById('treated-teeth').value = '';
+            $('#patient-select').val('').trigger('change');
+            
+            // إعادة تعيين تاريخ اليوم
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('treatment-date').value = today;
+            
+            // إعادة تعيين الأسنان المعالجة
+            treatedTeeth = [];
+            document.querySelectorAll('.tooth').forEach(tooth => {
+                tooth.classList.remove('treated');
+            });
+            
+            // إعادة تعيين الأدوية
+            const medContainer = document.getElementById('medications-container');
+            medContainer.innerHTML = '';
+            addMedicationField();
+            
+            // تبديل الأزرار إلى وضعها الطبيعي
+            document.getElementById('save-treatment').style.display = 'inline-flex';
+            document.getElementById('update-treatment').style.display = 'none';
+            document.getElementById('cancel-edit').style.display = 'none';
+            
+            isEditing = false;
+            currentTreatmentId = null;
+        }
+        
+        // حذف العلاج
+        function deleteTreatment(treatmentId) {
+            if (!confirm('هل أنت متأكد من حذف هذا العلاج؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                return;
+            }
+            
+            database.ref('Watine/treatments/' + treatmentId).remove()
+                .then(() => {
+                    loadTreatments();
+                })
+                .catch(error => {
+                    alert('حدث خطأ أثناء حذف العلاج');
+                    console.error("Error deleting treatment:", error);
+                });
+        }
+        
+        // تصفية العلاجات حسب البحث
+        function filterTreatments() {
+            const searchTerm = document.getElementById('search-treatments').value.toLowerCase();
+            const dateFilter = document.getElementById('filter-date').value;
+            
+            let filteredTreatments = treatments;
+            
+            // التصفية حسب تاريخ العلاج
+            if (dateFilter) {
+                filteredTreatments = filteredTreatments.filter(t => t.date === dateFilter);
+            }
+            
+            // البحث باسم المريض أو نوع العلاج
+            if (searchTerm) {
+                filteredTreatments = filteredTreatments.filter(treatment => {
+                    const patient = patients.find(p => p.id === treatment.patientId) || { name: '', phone: '' };
+                    return (
+                        patient.name.toLowerCase().includes(searchTerm) ||
+                        patient.phone.includes(searchTerm) ||
+                        treatment.type.toLowerCase().includes(searchTerm) ||
+                        (treatment.notes && treatment.notes.toLowerCase().includes(searchTerm))
+                    );
+                });
+            }
+            
+            displayTreatments(filteredTreatments);
+        }
+        
+        // إنشاء تقرير العلاج
+        function generateReport(treatmentId, treatmentData = null) {
+            let treatment = treatmentData;
+            
+            if (!treatment) {
+                treatment = treatments.find(t => t.id === treatmentId);
+                if (!treatment) return;
+            }
+            
+            const patient = patients.find(p => p.id === treatment.patientId) || {
+                name: 'مريض غير معروف',
+                phone: 'غير متوفر'
+            };
+            
+            const reportDate = treatment.date ? formatDateWithForeignNumbers(new Date(treatment.date)) : formatDateWithForeignNumbers(new Date());
+            const treatedTeethList = treatment.treatedTeeth ? treatment.treatedTeeth.split(',') : [];
+            
+            const reportContent = `
+                <div class="report-header">
+                    <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="report-logo">
+                    <div class="clinic-name">عيادة واتين للأسنان</div>
+                    <div style="color: var(--gray); margin-bottom: 10px;">
+                        <i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر
+                    </div>
+                    <div style="font-size: 18px; font-weight: 600;">تقرير العلاج</div>
+                </div>
+                
+                <div class="report-patient">
+                    <div>
+                        <div class="report-row">
+                            <span class="report-label">اسم المريض:</span>
+                            <span class="report-value">${patient.name}</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">رقم الهاتف:</span>
+                            <span class="report-value">${patient.phone}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="report-row">
+                            <span class="report-label">رقم التقرير:</span>
+                            <span class="report-value">${treatmentId.substring(0, 8)}</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">تاريخ العلاج:</span>
+                            <span class="report-value">${reportDate}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-details">
+                    <h3 class="report-title">تفاصيل العلاج</h3>
+                    
+                    <div class="report-row">
+                        <span class="report-label">نوع العلاج:</span>
+                        <span class="report-value">${treatment.type}</span>
+                    </div>
+                    
+                    ${treatedTeethList.length > 0 ? `
+                        <div class="report-teeth">
+                            <div class="report-teeth-title">الأسنان المعالجة:</div>
+                            <div class="report-teeth-list">
+                                ${treatedTeethList.map(tooth => `
+                                    <span class="report-tooth">${tooth}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${treatment.notes ? `
+                        <div class="report-row">
+                            <span class="report-label">ملاحظات:</span>
+                            <span class="report-value">${treatment.notes}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                ${treatment.medications && treatment.medications.length > 0 ? `
+                    <div class="report-medications">
+                        <h3 class="report-title">الوصفة الطبية</h3>
+                        
+                        ${treatment.medications.map(med => `
+                            <div class="report-medication">
+                                <span>${med.name}</span>
+                                <span>${med.dose} - ${med.frequency}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                
+                <div class="report-footer">
+                    <p>شكراً لثقتكم بنا</p>
+                    <p>للاستفسار: 0555555555</p>
+                    <p>هذا التقرير صادر عن عيادة واتين للأسنان</p>
+                </div>
+            `;
+            
+            document.getElementById('report-content').innerHTML = reportContent;
+            document.getElementById('report-modal').style.display = 'block';
+        }
+        
+        // طباعة التقرير
+        function printReport() {
+            window.print();
+        }
+        
+        // إغلاق نافذة التقرير
+        function closeReportModal() {
+            document.getElementById('report-modal').style.display = 'none';
+        }
+        
+        // تنسيق التاريخ بأرقام أجنبية
+        function formatDateWithForeignNumbers(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                numberingSystem: 'latn'
+            };
+            
+            let formattedDate = date.toLocaleDateString('ar-EG', options);
+            
+            // استبدال الأرقام العربية بأجنبية (في حالة عدم دعم numberingSystem)
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            for (let i = 0; i < arabicNumbers.length; i++) {
+                formattedDate = formattedDate.replace(new RegExp(arabicNumbers[i], 'g'), i);
+            }
+            
+            return formattedDate;
+        }
     </script>
 </body>
 </html>

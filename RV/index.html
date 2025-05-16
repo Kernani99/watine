@@ -356,6 +356,85 @@
             text-align: center;
         }
         
+        /* نمط جديد لقائمة المرضى */
+        .patients-list {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            overflow: auto;
+        }
+        
+        .patients-list-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .patients-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .patient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        .patient-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .patient-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        
+        .patient-actions button {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        /* فلتر المواعيد باليوم */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-controls select, 
+        .filter-controls input {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
         @media (max-width: 768px) {
             nav ul li {
                 margin: 5px 0;
@@ -373,6 +452,10 @@
             
             .status-badge {
                 margin-top: 10px;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
             }
         }
     </style>
@@ -399,12 +482,28 @@
             </button>
         </div>
         
-        <div class="card">
-            <div class="form-group">
-                <input type="text" id="search-appointment" placeholder="ابحث عن موعد باسم المريض أو التاريخ..." 
-                       oninput="searchAppointments()" style="padding: 12px 20px; font-size: 16px;">
-            </div>
+        <!-- فلتر المواعيد باليوم -->
+        <div class="filter-controls">
+            <select id="day-filter" onchange="filterAppointmentsByDay()">
+                <option value="all">جميع الأيام</option>
+                <option value="today">اليوم</option>
+                <option value="tomorrow">غداً</option>
+                <option value="this-week">هذا الأسبوع</option>
+                <option value="next-week">الأسبوع القادم</option>
+            </select>
             
+            <select id="status-filter" onchange="filterAppointmentsByStatus()">
+                <option value="all">جميع الحالات</option>
+                <option value="upcoming">قادم</option>
+                <option value="waiting">في الانتظار</option>
+                <option value="completed">مكتمل</option>
+            </select>
+            
+            <input type="text" id="search-appointment" placeholder="ابحث عن موعد باسم المريض أو التاريخ..." 
+                   oninput="searchAppointments()" style="flex-grow: 1;">
+        </div>
+        
+        <div class="card">
             <div id="appointments-list">
                 <p><i class="fas fa-spinner fa-spin"></i> جاري تحميل المواعيد...</p>
             </div>
@@ -475,6 +574,20 @@
         </div>
     </div>
 
+    <!-- قائمة المرضى -->
+    <div id="patients-list-modal" class="patients-list">
+        <div class="patients-list-content">
+            <div class="patients-list-header">
+                <h2><i class="fas fa-user-injured"></i> قائمة المرضى</h2>
+                <button class="close-btn" onclick="closePatientsList()">&times;</button>
+            </div>
+            
+            <div id="patients-list-container">
+                <p><i class="fas fa-spinner fa-spin"></i> جاري تحميل قائمة المرضى...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- مكتبات JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
@@ -493,6 +606,7 @@
         
         // متغيرات التطبيق
         let patientsList = [];
+        let appointmentsList = [];
         
         // ========== دوال إدارة المواعيد ==========
         
@@ -573,8 +687,8 @@
                     }
                     
                     try {
-                        // تحويل كائن المواعيد إلى مصفوفة وفرزها حسب التاريخ
-                        const appointmentsArray = Object.entries(appointments)
+                        // تحويل كائن المواعيد إلى مصفوفة
+                        appointmentsList = Object.entries(appointments)
                             .map(([id, appointment]) => {
                                 // التحقق من وجود الحقول الأساسية
                                 if (!appointment.patientId || !appointment.date || !appointment.status || !appointment.type) {
@@ -583,79 +697,15 @@
                                 }
                                 return { id, ...appointment };
                             })
-                            .filter(app => app !== null) // تصفية المواعيد غير الصالحة
-                            .sort((a, b) => new Date(a.date) - new Date(b.date));
+                            .filter(app => app !== null); // تصفية المواعيد غير الصالحة
                         
-                        if (appointmentsArray.length === 0) {
+                        if (appointmentsList.length === 0) {
                             appointmentsContainer.innerHTML = '<p>لا توجد مواعيد صالحة للعرض.</p>';
                             return;
                         }
                         
-                        appointmentsArray.forEach((appointment) => {
-                            try {
-                                const patient = patientsList.find(p => p.id === appointment.patientId) || {
-                                    name: 'مريض غير معروف',
-                                    phone: 'بدون رقم'
-                                };
-                                
-                                const appointmentDate = new Date(appointment.date);
-                                if (isNaN(appointmentDate.getTime())) {
-                                    throw new Error('تاريخ غير صالح');
-                                }
-                                
-                                const formattedDate = formatArabicDate(appointmentDate);
-                                
-                                const appointmentElement = document.createElement('div');
-                                appointmentElement.className = `appointment-card ${appointment.status}`;
-                                appointmentElement.innerHTML = `
-                                    <div class="appointment-header">
-                                        <div class="appointment-patient">
-                                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(patient.name)}&background=3498db&color=fff" alt="صورة المريض">
-                                            <div>
-                                                <h4 style="margin: 0;">${patient.name}</h4>
-                                                <small>${patient.phone}</small>
-                                            </div>
-                                        </div>
-                                        <span class="status-badge ${appointment.status}">
-                                            <i class="far fa-${appointment.status === 'upcoming' ? 'calendar-check' : appointment.status === 'waiting' ? 'clock' : 'check-circle'}"></i> 
-                                            ${appointment.status === 'upcoming' ? 'قادم' : appointment.status === 'waiting' ? 'في الانتظار' : 'مكتمل'}
-                                        </span>
-                                    </div>
-                                    
-                                    <div>
-                                        <p style="margin: 0 0 10px 0;">
-                                            <i class="far fa-calendar-alt"></i> ${formattedDate}
-                                            <span class="appointment-type ${appointment.type}" style="margin-right: 10px;">
-                                                <i class="fas fa-${appointment.type === 'checkup' ? 'stethoscope' : appointment.type === 'followup' ? 'redo' : 'comment-medical'}"></i> 
-                                                ${appointment.type === 'checkup' ? 'فحص عام' : appointment.type === 'followup' ? 'متابعة' : 'استشارة'}
-                                            </span>
-                                            <span><i class="far fa-clock"></i> ${appointment.duration} دقيقة</span>
-                                        </p>
-                                        
-                                        ${appointment.notes ? `<p style="margin: 0;"><i class="far fa-sticky-note"></i> ${appointment.notes}</p>` : ''}
-                                    </div>
-                                    
-                                    <div class="appointment-actions" style="margin-top: 10px;">
-                                        <button onclick="changeAppointmentStatus('${appointment.id}', 'upcoming')" class="primary" style="padding: 5px 10px; font-size: 12px;">
-                                            <i class="far fa-calendar-check"></i> قادم
-                                        </button>
-                                        <button onclick="changeAppointmentStatus('${appointment.id}', 'waiting')" class="secondary" style="padding: 5px 10px; font-size: 12px;">
-                                            <i class="far fa-clock"></i> انتظار
-                                        </button>
-                                        <button onclick="changeAppointmentStatus('${appointment.id}', 'completed')" class="success" style="padding: 5px 10px; font-size: 12px;">
-                                            <i class="far fa-check-circle"></i> اكتمال
-                                        </button>
-                                        <button onclick="deleteAppointment('${appointment.id}')" class="danger" style="padding: 5px 10px; font-size: 12px;">
-                                            <i class="far fa-trash-alt"></i> حذف
-                                        </button>
-                                    </div>
-                                `;
-                                
-                                appointmentsContainer.appendChild(appointmentElement);
-                            } catch (error) {
-                                console.error('Error processing appointment:', appointment.id, error);
-                            }
-                        });
+                        // عرض المواعيد بعد الفرز
+                        displayAppointments(appointmentsList);
                     } catch (error) {
                         console.error('Error processing appointments:', error);
                         appointmentsContainer.innerHTML = '<p class="error-message">حدث خطأ في معالجة بيانات المواعيد</p>';
@@ -665,6 +715,86 @@
                     console.error("Error loading appointments:", error);
                     appointmentsContainer.innerHTML = '<p class="error-message">حدث خطأ في تحميل المواعيد. يرجى المحاولة لاحقاً.</p>';
                 });
+        }
+
+        // عرض المواعيد في القائمة
+        function displayAppointments(appointments) {
+            const appointmentsContainer = document.getElementById('appointments-list');
+            appointmentsContainer.innerHTML = '';
+            
+            if (appointments.length === 0) {
+                appointmentsContainer.innerHTML = '<p>لا توجد مواعيد تطابق معايير البحث.</p>';
+                return;
+            }
+            
+            // فرز المواعيد حسب التاريخ
+            const sortedAppointments = [...appointments].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            sortedAppointments.forEach((appointment) => {
+                try {
+                    const patient = patientsList.find(p => p.id === appointment.patientId) || {
+                        name: 'مريض غير معروف',
+                        phone: 'بدون رقم'
+                    };
+                    
+                    const appointmentDate = new Date(appointment.date);
+                    if (isNaN(appointmentDate.getTime())) {
+                        throw new Error('تاريخ غير صالح');
+                    }
+                    
+                    const formattedDate = formatArabicDate(appointmentDate);
+                    
+                    const appointmentElement = document.createElement('div');
+                    appointmentElement.className = `appointment-card ${appointment.status}`;
+                    appointmentElement.innerHTML = `
+                        <div class="appointment-header">
+                            <div class="appointment-patient">
+                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(patient.name)}&background=3498db&color=fff" alt="صورة المريض">
+                                <div>
+                                    <h4 style="margin: 0;">${patient.name}</h4>
+                                    <small>${patient.phone}</small>
+                                </div>
+                            </div>
+                            <span class="status-badge ${appointment.status}">
+                                <i class="far fa-${appointment.status === 'upcoming' ? 'calendar-check' : appointment.status === 'waiting' ? 'clock' : 'check-circle'}"></i> 
+                                ${appointment.status === 'upcoming' ? 'قادم' : appointment.status === 'waiting' ? 'في الانتظار' : 'مكتمل'}
+                            </span>
+                        </div>
+                        
+                        <div>
+                            <p style="margin: 0 0 10px 0;">
+                                <i class="far fa-calendar-alt"></i> ${formattedDate}
+                                <span class="appointment-type ${appointment.type}" style="margin-right: 10px;">
+                                    <i class="fas fa-${appointment.type === 'checkup' ? 'stethoscope' : appointment.type === 'followup' ? 'redo' : 'comment-medical'}"></i> 
+                                    ${appointment.type === 'checkup' ? 'فحص عام' : appointment.type === 'followup' ? 'متابعة' : 'استشارة'}
+                                </span>
+                                <span><i class="far fa-clock"></i> ${appointment.duration} دقيقة</span>
+                            </p>
+                            
+                            ${appointment.notes ? `<p style="margin: 0;"><i class="far fa-sticky-note"></i> ${appointment.notes}</p>` : ''}
+                        </div>
+                        
+                        <div class="appointment-actions" style="margin-top: 10px;">
+                            <button onclick="changeAppointmentStatus('${appointment.id}', 'upcoming')" class="primary" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="far fa-calendar-check"></i> قادم
+                            </button>
+                            <button onclick="changeAppointmentStatus('${appointment.id}', 'waiting')" class="secondary" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="far fa-clock"></i> انتظار
+                            </button>
+                            <button onclick="changeAppointmentStatus('${appointment.id}', 'completed')" class="success" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="far fa-check-circle"></i> اكتمال
+                            </button>
+                            <button onclick="deleteAppointment('${appointment.id}')" class="danger" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="far fa-trash-alt"></i> حذف
+                            </button>
+                        </div>
+                    `;
+                    
+                    appointmentsContainer.appendChild(appointmentElement);
+                } catch (error) {
+                    console.error('Error processing appointment:', appointment.id, error);
+                }
+            });
         }
 
         // إضافة موعد جديد إلى قاعدة البيانات
@@ -757,23 +887,162 @@
         // بحث المواعيد
         function searchAppointments() {
             const searchTerm = document.getElementById('search-appointment').value.toLowerCase();
-            const appointments = document.getElementById('appointments-list').getElementsByClassName('appointment-card');
             
-            for (let appointment of appointments) {
-                const patientName = appointment.querySelector('.appointment-patient h4').textContent.toLowerCase();
-                const dateText = appointment.querySelector('p').textContent.toLowerCase();
+            if (!searchTerm) {
+                displayAppointments(appointmentsList);
+                return;
+            }
+            
+            const filteredAppointments = appointmentsList.filter(appointment => {
+                const patient = patientsList.find(p => p.id === appointment.patientId) || {
+                    name: 'مريض غير معروف',
+                    phone: 'بدون رقم'
+                };
                 
-                if (patientName.includes(searchTerm) || dateText.includes(searchTerm)) {
-                    appointment.style.display = '';
-                } else {
-                    appointment.style.display = 'none';
+                const appointmentDate = new Date(appointment.date);
+                const formattedDate = formatArabicDate(appointmentDate);
+                
+                return patient.name.toLowerCase().includes(searchTerm) || 
+                       patient.phone.toLowerCase().includes(searchTerm) || 
+                       formattedDate.toLowerCase().includes(searchTerm) ||
+                       appointment.notes?.toLowerCase().includes(searchTerm);
+            });
+            
+            displayAppointments(filteredAppointments);
+        }
+
+        // فلتر المواعيد حسب اليوم
+        function filterAppointmentsByDay() {
+            const filterValue = document.getElementById('day-filter').value;
+            
+            if (filterValue === 'all') {
+                displayAppointments(appointmentsList);
+                return;
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            const filteredAppointments = appointmentsList.filter(appointment => {
+                const appointmentDate = new Date(appointment.date);
+                appointmentDate.setHours(0, 0, 0, 0);
+                
+                switch (filterValue) {
+                    case 'today':
+                        return appointmentDate.getTime() === today.getTime();
+                    case 'tomorrow':
+                        return appointmentDate.getTime() === tomorrow.getTime();
+                    case 'this-week':
+                        return appointmentDate >= today && appointmentDate < tomorrow;
+                    case 'next-week':
+                        return appointmentDate >= tomorrow && appointmentDate < nextWeek;
+                    default:
+                        return true;
+                }
+            });
+            
+            displayAppointments(filteredAppointments);
+        }
+
+        // فلتر المواعيد حسب الحالة
+        function filterAppointmentsByStatus() {
+            const filterValue = document.getElementById('status-filter').value;
+            
+            if (filterValue === 'all') {
+                displayAppointments(appointmentsList);
+                return;
+            }
+            
+            const filteredAppointments = appointmentsList.filter(appointment => 
+                appointment.status === filterValue
+            );
+            
+            displayAppointments(filteredAppointments);
+        }
+
+        // ========== إدارة قائمة المرضى ==========
+        
+        // عرض قائمة المرضى
+        function showPatientsList() {
+            document.getElementById('patients-list-modal').style.display = 'block';
+            loadPatientsList();
+        }
+
+        // إغلاق قائمة المرضى
+        function closePatientsList() {
+            document.getElementById('patients-list-modal').style.display = 'none';
+        }
+
+        // تحميل قائمة المرضى
+        function loadPatientsList() {
+            const container = document.getElementById('patients-list-container');
+            container.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> جاري تحميل قائمة المرضى...</p>';
+            
+            database.ref('/Watine/patients').once('value')
+                .then((snapshot) => {
+                    const patients = snapshot.val();
+                    container.innerHTML = '';
+                    
+                    if (!patients) {
+                        container.innerHTML = '<p>لا توجد بيانات للمرضى.</p>';
+                        return;
+                    }
+                    
+                    Object.entries(patients).forEach(([id, patient]) => {
+                        if (patient.name && patient.phone) {
+                            const patientElement = document.createElement('div');
+                            patientElement.className = 'patient-item';
+                            patientElement.innerHTML = `
+                                <div class="patient-info">
+                                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(patient.name)}&background=3498db&color=fff" alt="صورة المريض">
+                                    <div>
+                                        <h4 style="margin: 0;">${patient.name}</h4>
+                                        <small>${patient.phone}</small>
+                                    </div>
+                                </div>
+                                <div class="patient-actions">
+                                    <button onclick="createAppointmentForPatient('${id}')" class="primary" style="padding: 5px 10px;">
+                                        <i class="fas fa-calendar-plus"></i> موعد جديد
+                                    </button>
+                                </div>
+                            `;
+                            container.appendChild(patientElement);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading patients list:", error);
+                    container.innerHTML = '<p class="error-message">حدث خطأ في تحميل قائمة المرضى.</p>';
+                });
+        }
+
+        // إنشاء موعد لمريض محدد
+        function createAppointmentForPatient(patientId) {
+            const patient = patientsList.find(p => p.id === patientId);
+            if (!patient) return;
+            
+            closePatientsList();
+            showAddAppointmentModal();
+            
+            // تعبئة بيانات المريض تلقائياً
+            const select = document.getElementById('appointment-patient');
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === patientId) {
+                    select.selectedIndex = i;
+                    break;
                 }
             }
         }
 
         // ========== دوال مساعدة ==========
         
-        // تنسيق التاريخ بالعربية
+        // تنسيق التاريخ بالعربية مع الأرقام الأجنبية
         function formatArabicDate(date) {
             const options = {
                 weekday: 'long',
@@ -781,9 +1050,20 @@
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                numberingSystem: 'latn' // استخدام الأرقام الأجنبية
             };
-            return date.toLocaleDateString('ar-EG', options);
+            
+            // إنشاء تاريخ مع تنسيق عربي ولكن بأرقام أجنبية
+            let formattedDate = date.toLocaleDateString('ar-EG', options);
+            
+            // استبدال الأرقام العربية بأجنبية (في حالة عدم دعم numberingSystem)
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            for (let i = 0; i < arabicNumbers.length; i++) {
+                formattedDate = formattedDate.replace(new RegExp(arabicNumbers[i], 'g'), i);
+            }
+            
+            return formattedDate;
         }
 
         // عرض رسالة خطأ
@@ -834,8 +1114,11 @@
             loadPatientsForAppointments();
             loadAppointments();
             
-            // منع الروابط من العمل
-            document.querySelectorAll('nav a').forEach(link => {
+            // ربط زر المرضى بقائمة المرضى
+            document.getElementById('patients-link').addEventListener('click', showPatientsList);
+            
+            // منع الروابط الأخرى من العمل
+            document.querySelectorAll('nav a:not(#patients-link)').forEach(link => {
                 link.addEventListener('click', (e) => e.preventDefault());
             });
         });

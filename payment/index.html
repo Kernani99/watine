@@ -152,10 +152,17 @@
             height: auto;
             padding: 10px;
             background-color: var(--light-pink);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
         }
         
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 100%;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 1.5;
         }
         
         .btn {
@@ -210,11 +217,6 @@
         .btn-sm {
             padding: 8px 12px;
             font-size: 13px;
-        }
-        
-        .btn-pink {
-            background-color: #f8bbd0;
-            color: #880e4f;
         }
         
         .action-buttons {
@@ -476,23 +478,74 @@
             color: var(--gray);
         }
         
-        /* تأثيرات خاصة */
-        .floral-decoration {
-            position: absolute;
-            opacity: 0.1;
-            z-index: 0;
+        /* اليوميات المالية */
+        .income-summary {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--light-pink);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            align-items: center;
         }
         
-        .floral-1 {
-            top: 20px;
-            left: 20px;
-            transform: rotate(30deg);
+        .income-summary-item {
+            text-align: center;
+            flex: 1;
         }
         
-        .floral-2 {
-            bottom: 20px;
-            right: 20px;
-            transform: rotate(-20deg);
+        .income-summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .income-summary-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .report-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* مجموعة المدفوعات لنفس المريض */
+        .patient-payments-group {
+            margin-bottom: 25px;
+            border: 1px solid #f0e6ef;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .patient-payments-header {
+            background-color: var(--light-pink);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+        
+        .patient-payments-header h4 {
+            margin: 0;
+            flex: 1;
+        }
+        
+        .patient-payments-total {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .patient-payments-content {
+            display: none;
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .patient-payments-group.expanded .patient-payments-content {
+            display: block;
         }
         
         @media print {
@@ -541,6 +594,15 @@
             .clinic-logo {
                 height: 60px;
             }
+            
+            .income-summary {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .report-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -561,6 +623,37 @@
     </header>
     
     <div class="container">
+        <!-- ملخص المداخيل -->
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-chart-line" style="color: var(--primary);"></i> ملخص المداخيل</h2>
+            <div class="income-summary">
+                <div class="income-summary-item">
+                    <div class="income-summary-value" id="today-income">0 د.ج</div>
+                    <div class="income-summary-label">مداخيل اليوم</div>
+                </div>
+                <div class="income-summary-item">
+                    <div class="income-summary-value" id="week-income">0 د.ج</div>
+                    <div class="income-summary-label">مداخيل الأسبوع</div>
+                </div>
+                <div class="income-summary-item">
+                    <div class="income-summary-value" id="month-income">0 د.ج</div>
+                    <div class="income-summary-label">مداخيل الشهر</div>
+                </div>
+            </div>
+            
+            <div class="report-buttons">
+                <button onclick="printDailyReport()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> طباعة تقرير اليوم
+                </button>
+                <button onclick="printWeeklyReport()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> طباعة تقرير الأسبوع
+                </button>
+                <button onclick="printMonthlyReport()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> طباعة تقرير الشهر
+                </button>
+            </div>
+        </div>
+        
         <div class="card">
             <h2 class="card-title"><i class="fas fa-plus-circle" style="color: var(--primary);"></i> تسجيل دفعة جديدة</h2>
             <form id="payment-form">
@@ -726,7 +819,9 @@
                     noResults: function() {
                         return "لا توجد نتائج";
                     }
-                }
+                },
+                templateResult: formatPatient,
+                templateSelection: formatPatientSelection
             });
             
             // تحميل قائمة المرضى
@@ -758,7 +853,26 @@
             document.getElementById('filter-date').addEventListener('change', filterPayments);
         });
         
-        // تحميل قائمة المرضى
+        // تنسيق عرض المريض في Select2
+        function formatPatient(patient) {
+            if (!patient.id) return patient.text;
+            
+            const $patient = $(
+                `<div>
+                    <strong>${patient.fullName || patient.text}</strong>
+                    ${patient.phone ? `<div style="font-size: 0.8em; color: #666;">${patient.phone}</div>` : ''}
+                </div>`
+            );
+            return $patient;
+        }
+        
+        // تنسيق اختيار المريض في Select2
+        function formatPatientSelection(patient) {
+            if (!patient.id) return patient.text;
+            return patient.fullName || patient.text;
+        }
+        
+        // تحميل قائمة المرضى من Firebase
         function loadPatients() {
             $('#patient-select').html('<option value="">جاري تحميل المرضى...</option>');
             
@@ -770,8 +884,10 @@
                     const patientsData = snapshot.val();
                     if (patientsData) {
                         Object.entries(patientsData).forEach(([id, patient]) => {
-                            if (patient.name && patient.phone) {
-                                const option = new Option(`${patient.name} - ${patient.phone}`, id);
+                            if (patient.fullName) {
+                                const option = new Option(`${patient.fullName}${patient.phone ? ` - ${patient.phone}` : ''}`, id);
+                                option.fullName = patient.fullName;
+                                option.phone = patient.phone;
                                 $('#patient-select').append(option);
                                 patients.push({ id, ...patient });
                             }
@@ -803,6 +919,9 @@
                             }
                         });
                         
+                        // حساب المداخيل مع مراعاة المبالغ المستردة
+                        calculateIncomeSummary(payments);
+                        
                         // عرض المدفوعات بعد الفرز من الأحدث إلى الأقدم
                         displayPayments(payments.reverse());
                     } else {
@@ -813,6 +932,43 @@
                     console.error("Error loading payments:", error);
                     paymentsList.innerHTML = '<p style="text-align: center;" class="error">حدث خطأ في تحميل المدفوعات</p>';
                 });
+        }
+        
+        // حساب ملخص المداخيل مع مراعاة المبالغ المستردة
+        function calculateIncomeSummary(allPayments) {
+            const today = new Date().toISOString().split('T')[0];
+            const todayPayments = allPayments.filter(p => p.date === today);
+            const todayIncome = todayPayments.reduce((sum, p) => {
+                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+            }, 0);
+            
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            const weekPayments = allPayments.filter(p => {
+                const paymentDate = new Date(p.date);
+                return paymentDate >= oneWeekAgo;
+            });
+            const weekIncome = weekPayments.reduce((sum, p) => {
+                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+            }, 0);
+            
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthPayments = allPayments.filter(p => {
+                const paymentDate = new Date(p.date);
+                return paymentDate.getMonth() === currentMonth && 
+                       paymentDate.getFullYear() === currentYear;
+            });
+            const monthIncome = monthPayments.reduce((sum, p) => {
+                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+            }, 0);
+            
+            document.getElementById('today-income').textContent = todayIncome.toFixed(2) + ' د.ج';
+            document.getElementById('week-income').textContent = weekIncome.toFixed(2) + ' د.ج';
+            document.getElementById('month-income').textContent = monthIncome.toFixed(2) + ' د.ج';
         }
         
         // عرض المدفوعات في القائمة
@@ -826,68 +982,107 @@
             
             paymentsList.innerHTML = '';
             
+            // تجميع المدفوعات حسب المريض
+            const paymentsByPatient = {};
             paymentsToDisplay.forEach(payment => {
-                const patient = patients.find(p => p.id === payment.patientId) || {
-                    name: 'مريض غير معروف',
+                if (!paymentsByPatient[payment.patientId]) {
+                    paymentsByPatient[payment.patientId] = [];
+                }
+                paymentsByPatient[payment.patientId].push(payment);
+            });
+            
+            // عرض المدفوعات المجمعة
+            Object.entries(paymentsByPatient).forEach(([patientId, patientPayments]) => {
+                const patient = patients.find(p => p.id === patientId) || {
+                    fullName: 'مريض غير معروف',
                     phone: 'غير متوفر'
                 };
                 
-                const paymentDate = payment.date ? formatDateWithForeignNumbers(new Date(payment.date)) : 'غير محدد';
-                const statusClass = payment.status || 'pending';
-                const statusText = getStatusText(payment.status);
+                // حساب إجمالي مدفوعات المريض مع مراعاة المبالغ المستردة
+                const totalAmount = patientPayments.reduce((sum, p) => {
+                    return p.status === 'completed' ? sum + parseFloat(p.amount) : 
+                           p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+                }, 0);
                 
-                const paymentElement = document.createElement('div');
-                paymentElement.className = `payment-card ${statusClass}`;
-                paymentElement.innerHTML = `
-                    <div class="payment-header">
-                        <div class="payment-patient">
-                            <div class="patient-avatar">
-                                ${patient.name.charAt(0)}
-                            </div>
-                            <div style="flex: 1;">
-                                <h4 style="margin: 0;">${patient.name}</h4>
-                                <small>${patient.phone}</small>
-                            </div>
+                const groupElement = document.createElement('div');
+                groupElement.className = 'patient-payments-group';
+                groupElement.innerHTML = `
+                    <div class="patient-payments-header" onclick="togglePatientPayments(this.parentElement)">
+                        <div class="patient-avatar">
+                            ${patient.fullName.charAt(0)}
                         </div>
-                        <div class="payment-status-container">
-                            <span class="payment-status status-${statusClass}">
-                                <i class="fas fa-${getStatusIcon(payment.status)}"></i> ${statusText}
-                            </span>
-                        </div>
+                        <h4>${patient.fullName}</h4>
+                        <div class="patient-payments-total">${totalAmount.toFixed(2)} د.ج</div>
+                        <i class="fas fa-chevron-down"></i>
                     </div>
-                    
-                    <div class="payment-details">
-                        <div>
-                            <span class="payment-amount">${payment.amount} د.ج</span>
-                            ${payment.installment === 'yes' ? 
-                              `<small style="display: block; color: var(--gray);">دفعة من ${payment.totalAmount} د.ج</small>` : ''}
-                        </div>
-                        <div>
-                            <span class="payment-date"><i class="far fa-calendar-alt"></i> ${paymentDate}</span>
-                        </div>
-                    </div>
-                    
-                    ${payment.notes ? `
-                        <div class="payment-notes">
-                            <strong>ملاحظات:</strong> ${payment.notes}
-                        </div>
-                    ` : ''}
-                    
-                    <div class="payment-actions no-print">
-                        <button onclick="editPayment('${payment.id}')" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> تعديل
-                        </button>
-                        <button onclick="deletePayment('${payment.id}')" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
-                        <button onclick="printSingleReceipt('${payment.id}')" class="btn btn-success btn-sm">
-                            <i class="fas fa-print"></i> طباعة
-                        </button>
-                    </div>
+                    <div class="patient-payments-content"></div>
                 `;
                 
-                paymentsList.appendChild(paymentElement);
+                const contentElement = groupElement.querySelector('.patient-payments-content');
+                
+                // عرض كل دفعة للمريض
+                patientPayments.forEach(payment => {
+                    const paymentDate = payment.date ? formatDateWithForeignNumbers(new Date(payment.date)) : 'غير محدد';
+                    const statusClass = payment.status || 'pending';
+                    const statusText = getStatusText(payment.status);
+                    
+                    const paymentElement = document.createElement('div');
+                    paymentElement.className = `payment-card ${statusClass}`;
+                    paymentElement.innerHTML = `
+                        <div class="payment-header">
+                            <div class="payment-status-container">
+                                <span class="payment-status status-${statusClass}">
+                                    <i class="fas fa-${getStatusIcon(payment.status)}"></i> ${statusText}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-details">
+                            <div>
+                                <span class="payment-amount">${payment.amount} د.ج</span>
+                                ${payment.installment === 'yes' ? 
+                                  `<small style="display: block; color: var(--gray);">دفعة من ${payment.totalAmount} د.ج</small>` : ''}
+                            </div>
+                            <div>
+                                <span class="payment-date"><i class="far fa-calendar-alt"></i> ${paymentDate}</span>
+                            </div>
+                        </div>
+                        
+                        ${payment.notes ? `
+                            <div class="payment-notes">
+                                <strong>ملاحظات:</strong> ${payment.notes}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="payment-actions no-print">
+                            <button onclick="editPayment('${payment.id}')" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button onclick="deletePayment('${payment.id}')" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                            <button onclick="printSingleReceipt('${payment.id}')" class="btn btn-success btn-sm">
+                                <i class="fas fa-print"></i> طباعة
+                            </button>
+                        </div>
+                    `;
+                    
+                    contentElement.appendChild(paymentElement);
+                });
+                
+                paymentsList.appendChild(groupElement);
             });
+        }
+        
+        // تبديل عرض/إخفاء مدفوعات المريض
+        function togglePatientPayments(groupElement) {
+            groupElement.classList.toggle('expanded');
+            const icon = groupElement.querySelector('.fa-chevron-down');
+            if (groupElement.classList.contains('expanded')) {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
         }
         
         // حفظ الدفعة في قاعدة البيانات
@@ -912,7 +1107,7 @@
             
             const paymentData = {
                 patientId,
-                patientName: patient.name,
+                patientName: patient.fullName || patient.name,
                 patientPhone: patient.phone,
                 amount: parseFloat(amount),
                 status,
@@ -1006,7 +1201,7 @@
             
             const paymentData = {
                 patientId,
-                patientName: patient.name,
+                patientName: patient.fullName || patient.name,
                 patientPhone: patient.phone,
                 amount: parseFloat(amount),
                 status,
@@ -1098,10 +1293,10 @@
             // البحث باسم المريض أو المبلغ
             if (searchTerm) {
                 filteredPayments = filteredPayments.filter(payment => {
-                    const patient = patients.find(p => p.id === payment.patientId) || { name: '', phone: '' };
+                    const patient = patients.find(p => p.id === payment.patientId) || { fullName: '', phone: '' };
                     return (
-                        patient.name.toLowerCase().includes(searchTerm) ||
-                        patient.phone.includes(searchTerm) ||
+                        (patient.fullName && patient.fullName.toLowerCase().includes(searchTerm)) ||
+                        (patient.phone && patient.phone.includes(searchTerm)) ||
                         payment.amount.toString().includes(searchTerm) ||
                         (payment.notes && payment.notes.toLowerCase().includes(searchTerm))
                     );
@@ -1114,7 +1309,7 @@
         // إنشاء وصل الدفع
         function generateReceipt(paymentId, paymentData) {
             const patient = patients.find(p => p.id === paymentData.patientId) || {
-                name: 'مريض غير معروف',
+                fullName: 'مريض غير معروف',
                 phone: 'غير متوفر'
             };
             
@@ -1142,7 +1337,7 @@
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">اسم المريض:</span>
-                        <span class="receipt-value">${patient.name}</span>
+                        <span class="receipt-value">${patient.fullName || patient.name}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">هاتف المريض:</span>
@@ -1216,6 +1411,139 @@
         // إغلاق نافذة الوصل
         function closeReceiptModal() {
             document.getElementById('receipt-modal').style.display = 'none';
+        }
+        
+        // طباعة تقرير اليوم
+        function printDailyReport() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayPayments = payments.filter(p => p.date === today);
+            generateReport('يومي', todayPayments, 'تقرير مداخيل اليوم');
+        }
+        
+        // طباعة تقرير الأسبوع
+        function printWeeklyReport() {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            const weekPayments = payments.filter(p => {
+                const paymentDate = new Date(p.date);
+                return paymentDate >= oneWeekAgo;
+            });
+            generateReport('أسبوعي', weekPayments, 'تقرير مداخيل الأسبوع');
+        }
+        
+        // طباعة تقرير الشهر
+        function printMonthlyReport() {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthPayments = payments.filter(p => {
+                const paymentDate = new Date(p.date);
+                return paymentDate.getMonth() === currentMonth && 
+                       paymentDate.getFullYear() === currentYear;
+            });
+            generateReport('شهري', monthPayments, 'تقرير مداخيل الشهر');
+        }
+        
+        // إنشاء تقرير المدفوعات
+        function generateReport(reportType, reportPayments, reportTitle) {
+            const totalIncome = reportPayments.reduce((sum, p) => {
+                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+            }, 0);
+            
+            let reportHTML = `
+                <div class="receipt">
+                    <div class="receipt-header">
+                        <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="receipt-logo">
+                        <div class="clinic-name">عيادة واتين للأسنان</div>
+                        <div style="color: var(--gray); margin-bottom: 10px;">
+                            <i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر
+                        </div>
+                        <div style="font-size: 18px; font-weight: 600;">${reportTitle}</div>
+                    </div>
+                    
+                    <div class="receipt-details">
+                        <div class="receipt-row">
+                            <span class="receipt-label">نوع التقرير:</span>
+                            <span class="receipt-value">${reportType}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">تاريخ التقرير:</span>
+                            <span class="receipt-value">${formatDateWithForeignNumbers(new Date())}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">عدد المدفوعات:</span>
+                            <span class="receipt-value">${reportPayments.length}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">المدفوعات المكتملة:</span>
+                            <span class="receipt-value">${reportPayments.filter(p => p.status === 'completed').length}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">المبالغ المستردة:</span>
+                            <span class="receipt-value">${reportPayments.filter(p => p.status === 'refunded').length}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="receipt-amount">
+                        الإجمالي: ${totalIncome.toFixed(2)} دينار جزائري
+                    </div>
+                    
+                    <h3 style="text-align: center; margin: 20px 0;">تفاصيل المدفوعات</h3>
+            `;
+            
+            if (reportPayments.length > 0) {
+                reportHTML += `
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <thead>
+                            <tr style="background-color: var(--light-pink);">
+                                <th style="padding: 10px; text-align: right;">اسم المريض</th>
+                                <th style="padding: 10px; text-align: right;">المبلغ</th>
+                                <th style="padding: 10px; text-align: right;">الحالة</th>
+                                <th style="padding: 10px; text-align: right;">التاريخ</th>
+                                <th style="padding: 10px; text-align: right;">ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                reportPayments.forEach(payment => {
+                    const patient = patients.find(p => p.id === payment.patientId) || {
+                        fullName: 'مريض غير معروف',
+                        phone: 'غير متوفر'
+                    };
+                    const statusText = getStatusText(payment.status);
+                    
+                    reportHTML += `
+                        <tr style="border-bottom: 1px solid #f0e6ef;">
+                            <td style="padding: 10px; text-align: right;">${patient.fullName || patient.name}</td>
+                            <td style="padding: 10px; text-align: right;">${payment.amount} د.ج</td>
+                            <td style="padding: 10px; text-align: right;">${statusText}</td>
+                            <td style="padding: 10px; text-align: right;">${formatDateWithForeignNumbers(new Date(payment.date))}</td>
+                            <td style="padding: 10px; text-align: right;">${payment.notes || '-'}</td>
+                        </tr>
+                    `;
+                });
+                
+                reportHTML += `
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                reportHTML += `
+                    <p style="text-align: center; color: var(--gray);">لا توجد مدفوعات في هذا التقرير</p>
+                `;
+            }
+            
+            reportHTML += `
+                    <div class="receipt-footer">
+                        <p>تم إنشاء التقرير آلياً بواسطة نظام إدارة المدفوعات</p>
+                        <p>عيادة واتين للأسنان - ${new Date().getFullYear()}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('report-content').innerHTML = reportHTML;
+            document.getElementById('report-modal').style.display = 'block';
         }
         
         // تنسيق التاريخ بأرقام أجنبية

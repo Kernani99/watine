@@ -373,6 +373,26 @@
             justify-content: flex-end;
         }
         
+        /* رسائل التنبيه */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -440,7 +460,7 @@
         </div>
     </div>
     
-    <!-- نافذة تسجيل مريض جديد المعدلة -->
+    <!-- نافذة تسجيل مريض جديد -->
     <div id="new-patient-modal" class="modal-overlay">
         <div class="modal-dialog">
             <div class="modal-header">
@@ -468,7 +488,7 @@
                         
                         <div class="form-group">
                             <label for="gender"><i class="fas fa-venus-mars"></i> الجنس</label>
-                            <select id="gender" class="form-control">
+                            <select id="gender" class="form-control" required>
                                 <option value="">اختر الجنس...</option>
                                 <option value="ذكر">ذكر</option>
                                 <option value="أنثى">أنثى</option>
@@ -569,7 +589,11 @@
             loadPatients();
             
             // فتح نافذة تسجيل مريض جديد
-            document.getElementById('new-patient-btn').addEventListener('click', openNewPatientModal);
+            document.getElementById('new-patient-btn').addEventListener('click', function() {
+                document.getElementById('patient-form').reset();
+                document.getElementById('patient-id').value = '';
+                document.getElementById('new-patient-modal').style.display = 'flex';
+            });
             
             // حفظ المريض
             document.getElementById('save-patient').addEventListener('click', savePatient);
@@ -599,27 +623,25 @@
             const patientsList = document.getElementById('patients-list');
             patientsList.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل قائمة المرضى...</p>';
             
-            patientsRef.once('value')
-                .then(snapshot => {
-                    patients = [];
-                    patientsList.innerHTML = '';
+            patientsRef.on('value', function(snapshot) {
+                patients = [];
+                patientsList.innerHTML = '';
+                
+                const patientsData = snapshot.val();
+                if (patientsData) {
+                    Object.entries(patientsData).forEach(([id, patient]) => {
+                        patients.push({ id, ...patient });
+                    });
                     
-                    const patientsData = snapshot.val();
-                    if (patientsData) {
-                        Object.entries(patientsData).forEach(([id, patient]) => {
-                            patients.push({ id, ...patient });
-                        });
-                        
-                        // عرض المرضى بعد الفرز حسب الأحدث
-                        displayPatients(patients.reverse());
-                    } else {
-                        patientsList.innerHTML = '<p style="text-align: center;">لا يوجد مرضى مسجلين بعد</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error loading patients:", error);
-                    patientsList.innerHTML = '<p style="text-align: center;">حدث خطأ في تحميل المرضى</p>';
-                });
+                    // عرض المرضى بعد الفرز حسب الأحدث
+                    displayPatients(patients.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)));
+                } else {
+                    patientsList.innerHTML = '<p style="text-align: center;">لا يوجد مرضى مسجلين بعد</p>';
+                }
+            }, function(error) {
+                console.error("Error loading patients:", error);
+                patientsList.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> حدث خطأ في تحميل قائمة المرضى</div>';
+            });
         }
         
         // عرض المرضى في الجدول
@@ -632,23 +654,27 @@
             }
             
             let tableHTML = `
-                <table class="patients-table">
-                    <thead>
-                        <tr>
-                            <th>الاسم الكامل</th>
-                            <th>رقم الهاتف</th>
-                            <th>العمر</th>
-                            <th>الجنس</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="patients-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم الكامل</th>
+                                <th>رقم الهاتف</th>
+                                <th>العمر</th>
+                                <th>الجنس</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
             
             patientsToDisplay.forEach(patient => {
+                const fullName = patient.fullName || 
+                                (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}`.trim() : 'غير معروف');
+                
                 tableHTML += `
                     <tr>
-                        <td>${patient.fullName || (patient.firstName + ' ' + patient.lastName) || ''}</td>
+                        <td>${fullName}</td>
                         <td>${patient.phone || 'غير متوفر'}</td>
                         <td>${patient.age || 'غير محدد'}</td>
                         <td>${patient.gender || 'غير محدد'}</td>
@@ -668,18 +694,12 @@
             });
             
             tableHTML += `
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             `;
             
             patientsList.innerHTML = tableHTML;
-        }
-        
-        // فتح نافذة تسجيل مريض جديد
-        function openNewPatientModal() {
-            document.getElementById('patient-form').reset();
-            document.getElementById('patient-id').value = '';
-            document.getElementById('new-patient-modal').style.display = 'flex';
         }
         
         // إغلاق نافذة تسجيل مريض جديد
@@ -689,20 +709,21 @@
         
         // حفظ المريض في Firebase
         function savePatient() {
-            const fullName = document.getElementById('full-name').value;
+            const fullName = document.getElementById('full-name').value.trim();
             const birthDate = document.getElementById('birth-date').value;
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
             const bloodType = document.getElementById('blood-type').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
             const isNew = document.getElementById('is-new').value;
-            const medicalHistory = document.getElementById('medical-history').value;
-            const notes = document.getElementById('notes').value;
+            const medicalHistory = document.getElementById('medical-history').value.trim();
+            const notes = document.getElementById('notes').value.trim();
             const patientId = document.getElementById('patient-id').value;
             
-            if (!fullName || !phone) {
-                alert('الرجاء إدخال الحقول المطلوبة (الاسم الكامل، رقم الهاتف)');
+            // التحقق من الحقول المطلوبة
+            if (!fullName || !phone || !gender) {
+                showAlert('error', 'الرجاء إدخال جميع الحقول المطلوبة (الاسم الكامل، رقم الهاتف، الجنس)');
                 return;
             }
             
@@ -713,8 +734,8 @@
             
             const patientData = {
                 fullName,
-                firstName, // محفوظ للتوافق مع الإصدار السابق
-                lastName,  // محفوظ للتوافق مع الإصدار السابق
+                firstName,
+                lastName,
                 birthDate,
                 age,
                 gender,
@@ -730,16 +751,21 @@
             
             // إذا كان هناك معرف مريض، فهذا يعني أننا نقوم بالتعديل
             if (patientId) {
-                patientData.createdAt = patients.find(p => p.id === patientId).createdAt;
+                // الحفاظ على تاريخ الإنشاء الأصلي
+                const originalPatient = patients.find(p => p.id === patientId);
+                if (originalPatient) {
+                    patientData.createdAt = originalPatient.createdAt;
+                }
+                
                 patientsRef.child(patientId).update(patientData)
                     .then(() => {
-                        alert('تم تحديث بيانات المريض بنجاح');
+                        showAlert('success', 'تم تحديث بيانات المريض بنجاح');
                         closeNewPatientModal();
                         loadPatients();
                     })
                     .catch(error => {
-                        alert('حدث خطأ أثناء تحديث المريض: ' + error.message);
                         console.error("Error updating patient:", error);
+                        showAlert('error', 'حدث خطأ أثناء تحديث المريض: ' + error.message);
                     });
             } else {
                 // إذا لم يكن هناك معرف مريض، فهذا تسجيل جديد
@@ -747,13 +773,13 @@
                 const newPatientRef = patientsRef.push();
                 newPatientRef.set(patientData)
                     .then(() => {
-                        alert('تم تسجيل المريض بنجاح');
+                        showAlert('success', 'تم تسجيل المريض بنجاح');
                         closeNewPatientModal();
                         loadPatients();
                     })
                     .catch(error => {
-                        alert('حدث خطأ أثناء حفظ المريض: ' + error.message);
                         console.error("Error saving patient:", error);
+                        showAlert('error', 'حدث خطأ أثناء حفظ المريض: ' + error.message);
                     });
             }
         }
@@ -761,10 +787,15 @@
         // عرض تفاصيل المريض
         function viewPatient(patientId) {
             const patient = patients.find(p => p.id === patientId);
-            if (!patient) return;
+            if (!patient) {
+                showAlert('error', 'لم يتم العثور على بيانات المريض');
+                return;
+            }
             
-            const patientName = patient.fullName || (patient.firstName + ' ' + patient.lastName) || '';
-            const initials = patientName.split(' ').map(n => n.charAt(0)).join('');
+            const fullName = patient.fullName || 
+                            (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}`.trim() : 'غير معروف');
+            
+            const initials = fullName.split(' ').map(n => n.charAt(0)).join('').substring(0, 2);
             
             let patientHTML = `
                 <div class="patient-card">
@@ -772,7 +803,7 @@
                         ${initials}
                     </div>
                     <div class="patient-info">
-                        <div class="patient-name">${patientName}</div>
+                        <div class="patient-name">${fullName}</div>
                         <div class="patient-meta">
                             <div class="patient-meta-item">
                                 <i class="fas fa-phone"></i> ${patient.phone || 'غير متوفر'}
@@ -802,10 +833,12 @@
                             <div class="detail-value">${patient.isNewPatient ? 'مريض جديد' : 'مريض من قبل'}</div>
                         </div>
                         
-                        <div class="detail-row">
-                            <div class="detail-label">تاريخ الميلاد:</div>
-                            <div class="detail-value">${patient.birthDate || 'غير محدد'}</div>
-                        </div>
+                        ${patient.birthDate ? `
+                            <div class="detail-row">
+                                <div class="detail-label">تاريخ الميلاد:</div>
+                                <div class="detail-value">${formatDate(patient.birthDate)}</div>
+                            </div>
+                        ` : ''}
                         
                         ${patient.medicalHistory ? `
                             <div class="detail-row">
@@ -852,11 +885,15 @@
         // تعديل بيانات المريض
         function editPatient(patientId) {
             const patient = patients.find(p => p.id === patientId);
-            if (!patient) return;
+            if (!patient) {
+                showAlert('error', 'لم يتم العثور على بيانات المريض');
+                return;
+            }
             
             // تعبئة النموذج ببيانات المريض
             document.getElementById('patient-id').value = patientId;
-            document.getElementById('full-name').value = patient.fullName || (patient.firstName + ' ' + patient.lastName) || '';
+            document.getElementById('full-name').value = patient.fullName || 
+                                                     (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}`.trim() : '');
             document.getElementById('birth-date').value = patient.birthDate || '';
             document.getElementById('age').value = patient.age || '';
             document.getElementById('gender').value = patient.gender || '';
@@ -868,7 +905,7 @@
             document.getElementById('notes').value = patient.notes || '';
             
             // فتح نافذة التسجيل للتعديل
-            openNewPatientModal();
+            document.getElementById('new-patient-modal').style.display = 'flex';
         }
         
         // حذف المريض
@@ -879,18 +916,18 @@
             
             patientsRef.child(patientId).remove()
                 .then(() => {
-                    alert('تم حذف المريض بنجاح');
+                    showAlert('success', 'تم حذف المريض بنجاح');
                     loadPatients();
                 })
                 .catch(error => {
-                    alert('حدث خطأ أثناء حذف المريض');
                     console.error("Error deleting patient:", error);
+                    showAlert('error', 'حدث خطأ أثناء حذف المريض');
                 });
         }
         
         // تصفية المرضى حسب البحث
         function filterPatients() {
-            const searchTerm = document.getElementById('search-patients').value.toLowerCase();
+            const searchTerm = document.getElementById('search-patients').value.toLowerCase().trim();
             
             if (!searchTerm) {
                 displayPatients(patients);
@@ -898,10 +935,13 @@
             }
             
             const filteredPatients = patients.filter(patient => {
-                const fullName = (patient.fullName || (patient.firstName + ' ' + patient.lastName) || '').toLowerCase();
+                const fullName = (patient.fullName || 
+                                (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : '')).toLowerCase();
+                const phone = patient.phone ? patient.phone.toLowerCase() : '';
+                
                 return (
                     fullName.includes(searchTerm) ||
-                    (patient.phone && patient.phone.includes(searchTerm))
+                    phone.includes(searchTerm)
                 );
             });
             
@@ -926,6 +966,29 @@
             };
             
             return new Date(dateString).toLocaleDateString('ar-EG', options);
+        }
+        
+        // عرض رسائل التنبيه
+        function showAlert(type, message) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass}`;
+            alertDiv.innerHTML = `
+                <i class="fas ${icon}"></i> ${message}
+                <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;margin-right:auto;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // إضافة التنبيه في بداية الصفحة
+            document.body.insertBefore(alertDiv, document.body.firstChild);
+            
+            // إزالة التنبيه بعد 5 ثواني
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
         }
     </script>
 </body>

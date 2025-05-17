@@ -970,7 +970,7 @@
         
         // تحميل قائمة المرضى
         function loadPatients() {
-            $('#patient-select').html('<option value="">جاري تحميل المرضى...</option>');
+            $('#patient-select').html('<option value=""><i class="fas fa-spinner fa-spin"></i> جاري تحميل المرضى...</option>');
             
             database.ref('/Watine/patients').once('value')
                 .then(snapshot => {
@@ -980,17 +980,24 @@
                     const patientsData = snapshot.val();
                     if (patientsData) {
                         Object.entries(patientsData).forEach(([id, patient]) => {
-                            if (patient && patient.name && patient.phone) {
-                                const option = new Option(`${patient.name} - ${patient.phone}`, id);
+                            if (patient && patient.fullName) {
+                                const phone = patient.phone || 'بدون رقم';
+                                const option = new Option(`${patient.fullName} - ${phone}`, id);
                                 $('#patient-select').append(option);
                                 patients.push({ 
                                     id, 
-                                    name: patient.name, 
-                                    phone: patient.phone,
+                                    name: patient.fullName, 
+                                    phone: phone,
                                     balance: patient.balance || 0
                                 });
                             }
                         });
+                        
+                        if (patients.length === 0) {
+                            $('#patient-select').html('<option value="">لا يوجد مرضى مسجلين بعد</option>');
+                        }
+                    } else {
+                        $('#patient-select').html('<option value="">لا يوجد مرضى مسجلين بعد</option>');
                     }
                     $('#patient-select').trigger('change');
                 })

@@ -166,16 +166,29 @@
             color: #27ae60;
         }
         
+        /* تعديلات Select2 */
+        .select2-container {
+            width: 100% !important;
+        }
+        
         .select2-container--default .select2-selection--single {
-            border: 1px solid #e0c8e0;
-            border-radius: 10px;
-            height: auto;
-            padding: 10px;
-            background-color: var(--light-pink);
+            border: 1px solid #e0c8e0 !important;
+            border-radius: 10px !important;
+            height: auto !important;
+            padding: 10px !important;
+            background-color: var(--light-pink) !important;
         }
         
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 100%;
+            height: 100% !important;
+            left: 10px !important;
+            right: auto !important;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding-right: 20px !important;
+            padding-left: 10px !important;
+            text-align: right !important;
         }
         
         .btn {
@@ -326,111 +339,43 @@
             margin-top: 15px;
         }
         
-        /* بطاقات العلاجات */
-        .treatment-card {
-            border-left: 4px solid var(--primary);
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.03);
-            position: relative;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-        .treatment-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        .treatment-header {
+        /* تصميم جديد لسجل العلاجات */
+        .compact-treatment {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #f0e6ef;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0e6ef;
         }
         
-        .treatment-patient {
+        .compact-treatment-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            flex: 1;
         }
         
-        .patient-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .compact-treatment-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .view-treatment-btn {
+            background-color: var(--primary);
             color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         
-        .treatment-date {
-            color: var(--gray);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .treatment-details {
-            margin-top: 15px;
-        }
-        
-        .treatment-type {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-        
-        .treated-teeth-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin: 10px 0;
-        }
-        
-        .treated-tooth {
-            background-color: var(--light-pink);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        
-        .treatment-notes {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: var(--light-pink);
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .medication-list {
-            margin-top: 15px;
-        }
-        
-        .medication-list-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed #f0e6ef;
-        }
-        
-        .treatment-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 15px;
-            justify-content: flex-end;
+        .view-treatment-btn:hover {
+            background-color: var(--secondary);
+            transform: scale(1.1);
         }
         
         /* نافذة التقرير */
@@ -515,8 +460,20 @@
             margin-bottom: 5px;
         }
         
+        .doctor-info {
+            font-size: 18px;
+            margin: 10px 0;
+            color: var(--dark);
+        }
+        
+        .clinic-address {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
         .report-logo {
-            height: 60px;
+            height: 80px;
             margin-bottom: 15px;
         }
         
@@ -583,6 +540,7 @@
             justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px dashed #f0e6ef;
+            margin-bottom: 10px;
         }
         
         .report-footer {
@@ -615,20 +573,18 @@
         
         /* إعدادات الطباعة */
         @media print {
-            @page {
-                size: A4;
-                margin: 10mm;
+            body * {
+                visibility: hidden;
             }
             
-            body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
-                font-size: 12pt;
+            .report, .report * {
+                visibility: visible;
             }
             
             .report {
+                position: absolute;
+                left: 0;
+                top: 0;
                 width: 100%;
                 margin: 0;
                 padding: 15px;
@@ -636,8 +592,22 @@
                 border: none;
             }
             
-            .no-print {
+            .no-print, .close-btn {
                 display: none !important;
+            }
+            
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+            
+            .prescription-only {
+                page: prescription;
+            }
+            
+            @page prescription {
+                size: A5;
+                margin: 8mm;
             }
             
             .prescription-only .report-header,
@@ -655,6 +625,18 @@
             
             .prescription-only .report-medications {
                 margin-top: 10px;
+            }
+            
+            .prescription-only .report-medication {
+                display: block;
+                padding: 5px 0;
+                margin-bottom: 15px;
+                border-bottom: none;
+            }
+            
+            .prescription-only .report-medication span {
+                display: block;
+                margin-bottom: 5px;
             }
         }
         
@@ -694,8 +676,8 @@
             <div class="header-text">
                 <h1><i class="fas fa-teeth"></i> نظام إدارة العلاجات</h1>
                 <div class="header-info">
-                    <span><i class="fas fa-hospital"></i> عيادة واتين للأسنان</span>
-                    <span><i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر</span>
+                    <span><i class="fas fa-hospital"></i> عيادة وتين لطب الأسنان</span>
+                    <span><i class="fas fa-map-marker-alt"></i> حي العزامية عين ازال</span>
                 </div>
             </div>
         </div>
@@ -855,7 +837,7 @@
     <!-- نافذة تقرير العلاج -->
     <div id="report-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header no-print">
                 <h3 class="modal-title"><i class="fas fa-file-medical-alt" style="color: var(--primary);"></i> تقرير العلاج</h3>
                 <button class="close-btn" onclick="closeReportModal()">&times;</button>
             </div>
@@ -915,6 +897,9 @@
                 language: {
                     noResults: function() {
                         return "لا توجد نتائج";
+                    },
+                    searching: function() {
+                        return "جاري البحث...";
                     }
                 }
             });
@@ -995,10 +980,15 @@
                     const patientsData = snapshot.val();
                     if (patientsData) {
                         Object.entries(patientsData).forEach(([id, patient]) => {
-                            if (patient.name && patient.phone) {
+                            if (patient && patient.name && patient.phone) {
                                 const option = new Option(`${patient.name} - ${patient.phone}`, id);
                                 $('#patient-select').append(option);
-                                patients.push({ id, ...patient });
+                                patients.push({ 
+                                    id, 
+                                    name: patient.name, 
+                                    phone: patient.phone,
+                                    balance: patient.balance || 0
+                                });
                             }
                         });
                     }
@@ -1040,7 +1030,7 @@
                 });
         }
         
-        // عرض العلاجات في القائمة
+        // عرض العلاجات في القائمة (تصميم مضغوط)
         function displayTreatments(treatmentsToDisplay) {
             const treatmentsList = document.getElementById('treatments-list');
             
@@ -1052,81 +1042,134 @@
             treatmentsList.innerHTML = '';
             
             treatmentsToDisplay.forEach(treatment => {
-                const patient = patients.find(p => p.id === treatment.patientId) || {
-                    name: 'مريض غير معروف',
-                    phone: 'غير متوفر'
-                };
+                const patient = patients.find(p => p.id === treatment.patientId);
+                if (!patient) return; // تخطي العلاجات التي لا يوجد لها مريض
                 
                 const treatmentDate = treatment.date ? formatDateWithForeignNumbers(new Date(treatment.date)) : 'غير محدد';
-                const treatedTeethList = treatment.treatedTeeth ? treatment.treatedTeeth.split(',') : [];
                 
                 const treatmentElement = document.createElement('div');
-                treatmentElement.className = 'treatment-card';
+                treatmentElement.className = 'compact-treatment';
                 treatmentElement.innerHTML = `
-                    <div class="treatment-header">
-                        <div class="treatment-patient">
-                            <div class="patient-avatar">
-                                ${patient.name.charAt(0)}
-                            </div>
-                            <div style="flex: 1;">
-                                <h4 style="margin: 0;">${patient.name}</h4>
-                                <small>${patient.phone}</small>
-                            </div>
-                        </div>
-                        <div class="treatment-date">
-                            <i class="far fa-calendar-alt"></i> ${treatmentDate}
+                    <div class="compact-treatment-info">
+                        <div class="patient-avatar">${patient.name.charAt(0)}</div>
+                        <div>
+                            <h4 style="margin: 0;">${patient.name}</h4>
+                            <small>${treatment.type} - ${treatmentDate}</small>
                         </div>
                     </div>
-                    
-                    <div class="treatment-details">
-                        <div class="treatment-type">
-                            <i class="fas fa-teeth"></i> نوع العلاج: ${treatment.type}
-                        </div>
-                        
-                        ${treatedTeethList.length > 0 ? `
-                            <div>
-                                <strong>الأسنان المعالجة:</strong>
-                                <div class="treated-teeth-list">
-                                    ${treatedTeethList.map(tooth => `
-                                        <span class="treated-tooth">${tooth}</span>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                        
-                        ${treatment.notes ? `
-                            <div class="treatment-notes">
-                                <strong>ملاحظات:</strong> ${treatment.notes}
-                            </div>
-                        ` : ''}
-                        
-                        ${treatment.medications && treatment.medications.length > 0 ? `
-                            <div class="medication-list">
-                                <strong>الوصفة الطبية:</strong>
-                                ${treatment.medications.map(med => `
-                                    <div class="medication-list-item">
-                                        <span>${med.name} (${med.dose} - ${med.frequency})</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="treatment-actions no-print">
-                        <button onclick="editTreatment('${treatment.id}')" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> تعديل
+                    <div class="compact-treatment-actions">
+                        <button class="view-treatment-btn" onclick="viewTreatmentDetails('${treatment.id}')">
+                            <i class="fas fa-eye"></i>
                         </button>
-                        <button onclick="deleteTreatment('${treatment.id}')" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash"></i> حذف
+                        <button class="btn btn-warning btn-sm" onclick="editTreatment('${treatment.id}')">
+                            <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="generateReport('${treatment.id}')" class="btn btn-success btn-sm">
-                            <i class="fas fa-print"></i> طباعة
+                        <button class="btn btn-danger btn-sm" onclick="deleteTreatment('${treatment.id}')">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 `;
                 
                 treatmentsList.appendChild(treatmentElement);
             });
+        }
+        
+        // عرض تفاصيل العلاج
+        function viewTreatmentDetails(treatmentId) {
+            const treatment = treatments.find(t => t.id === treatmentId);
+            if (!treatment) return;
+            
+            const patient = patients.find(p => p.id === treatment.patientId) || {
+                name: 'مريض غير معروف',
+                phone: 'غير متوفر'
+            };
+            
+            const treatmentDate = treatment.date ? formatDateWithForeignNumbers(new Date(treatment.date)) : 'غير محدد';
+            const treatedTeethList = treatment.treatedTeeth ? treatment.treatedTeeth.split(',') : [];
+            
+            const detailsHtml = `
+                <div class="treatment-details">
+                    <div class="treatment-patient">
+                        <div class="patient-avatar">${patient.name.charAt(0)}</div>
+                        <div>
+                            <h3>${patient.name}</h3>
+                            <p>${patient.phone}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="treatment-type">
+                        <i class="fas fa-teeth"></i> نوع العلاج: ${treatment.type}
+                    </div>
+                    
+                    <div class="treatment-date">
+                        <i class="far fa-calendar-alt"></i> تاريخ العلاج: ${treatmentDate}
+                    </div>
+                    
+                    ${treatedTeethList.length > 0 ? `
+                        <div>
+                            <strong>الأسنان المعالجة:</strong>
+                            <div class="treated-teeth-list">
+                                ${treatedTeethList.map(tooth => `
+                                    <span class="treated-tooth">${tooth}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${treatment.notes ? `
+                        <div class="treatment-notes">
+                            <strong>ملاحظات:</strong> ${treatment.notes}
+                        </div>
+                    ` : ''}
+                    
+                    ${treatment.medications && treatment.medications.length > 0 ? `
+                        <div class="medication-list">
+                            <strong>الوصفة الطبية:</strong>
+                            ${treatment.medications.map(med => `
+                                <div class="medication-list-item">
+                                    <span>${med.name}</span>
+                                    <span>${med.dose} - ${med.frequency}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="treatment-actions">
+                    <button onclick="generateReport('${treatment.id}')" class="btn btn-success">
+                        <i class="fas fa-print"></i> طباعة التقرير
+                    </button>
+                    <button onclick="closeTreatmentDetails()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            `;
+            
+            // إنشاء نافذة عرض التفاصيل
+            const detailsModal = document.createElement('div');
+            detailsModal.className = 'modal';
+            detailsModal.id = 'details-modal';
+            detailsModal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">تفاصيل العلاج</h3>
+                        <button class="close-btn" onclick="closeTreatmentDetails()">&times;</button>
+                    </div>
+                    ${detailsHtml}
+                </div>
+            `;
+            
+            document.body.appendChild(detailsModal);
+            detailsModal.style.display = 'block';
+        }
+        
+        // إغلاق نافذة تفاصيل العلاج
+        function closeTreatmentDetails() {
+            const modal = document.getElementById('details-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                setTimeout(() => modal.remove(), 300);
+            }
         }
         
         // إعداد اختيار الأسنان
@@ -1476,10 +1519,9 @@
             const reportContent = `
                 <div class="report-header">
                     <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="report-logo">
-                    <div class="clinic-name">عيادة واتين للأسنان</div>
-                    <div style="color: var(--gray); margin-bottom: 10px;">
-                        <i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر
-                    </div>
+                    <div class="clinic-name">عيادة وتين لطب الأسنان</div>
+                    <div class="doctor-info">الدكتورة: ربيقة شيماء زوجة قرناني</div>
+                    <div class="clinic-address"><i class="fas fa-map-marker-alt"></i> حي العزامية عين ازال</div>
                     <div style="font-size: 18px; font-weight: 600;">تقرير العلاج</div>
                 </div>
                 
@@ -1539,7 +1581,7 @@
                         
                         ${treatment.medications.map(med => `
                             <div class="report-medication">
-                                <span>${med.name}</span>
+                                <span><strong>${med.name}</strong></span>
                                 <span>${med.dose} - ${med.frequency}</span>
                             </div>
                         `).join('')}
@@ -1549,7 +1591,7 @@
                 <div class="report-footer">
                     <p>شكراً لثقتكم بنا</p>
                     <p>للاستفسار: 0555555555</p>
-                    <p>هذا التقرير صادر عن عيادة واتين للأسنان</p>
+                    <p>هذا التقرير صادر عن عيادة وتين لطب الأسنان</p>
                 </div>
             `;
             
@@ -1565,8 +1607,54 @@
         
         // طباعة الوصفة الطبية فقط
         function printPrescriptionOnly() {
+            const treatmentId = currentTreatmentId || document.getElementById('treatment-id').value;
+            const treatment = treatments.find(t => t.id === treatmentId);
+            
+            if (!treatment || !treatment.medications || treatment.medications.length === 0) {
+                alert('لا توجد وصفة طبية لطباعتها');
+                return;
+            }
+            
+            const prescriptionContent = `
+                <div class="report-header">
+                    <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="report-logo">
+                    <div class="clinic-name">عيادة وتين لطب الأسنان</div>
+                    <div class="doctor-info">الدكتورة: ربيقة شيماء زوجة قرناني</div>
+                    <div class="clinic-address"><i class="fas fa-map-marker-alt"></i> حي العزامية عين ازال</div>
+                    <h3 class="report-title">الوصفة الطبية</h3>
+                </div>
+                
+                <div class="report-patient">
+                    <div class="report-row">
+                        <span class="report-label">اسم المريض:</span>
+                        <span class="report-value">${treatment.patientName}</span>
+                    </div>
+                    <div class="report-row">
+                        <span class="report-label">تاريخ الوصفة:</span>
+                        <span class="report-value">${formatDateWithForeignNumbers(new Date(treatment.date))}</span>
+                    </div>
+                </div>
+                
+                <div class="report-medications prescription-only">
+                    ${treatment.medications.map(med => `
+                        <div class="report-medication">
+                            <span><strong>${med.name}</strong></span>
+                            <span>${med.dose}</span>
+                            <span>${med.frequency}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="report-footer">
+                    <p>توقيع الطبيب: _________________________</p>
+                    <p>ختم العيادة</p>
+                </div>
+            `;
+            
+            document.getElementById('report-content').innerHTML = prescriptionContent;
             document.getElementById('report-content').classList.add('prescription-only');
             window.print();
+            generateReport(treatmentId); // إعادة عرض التقرير الكامل بعد الطباعة
         }
         
         // إغلاق نافذة التقرير

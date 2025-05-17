@@ -340,12 +340,76 @@
         }
         
         /* تصميم جديد لسجل العلاجات */
+        .patient-treatment-group {
+            margin-bottom: 20px;
+            border: 1px solid #f0e6ef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .patient-header {
+            background-color: var(--light-purple);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .patient-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .patient-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .patient-phone {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .toggle-treatments {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .patient-treatments {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .patient-treatments.expanded {
+            max-height: 2000px;
+        }
+        
         .compact-treatment {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px;
             border-bottom: 1px solid #f0e6ef;
+            background-color: white;
+        }
+        
+        .compact-treatment:last-child {
+            border-bottom: none;
         }
         
         .compact-treatment-info {
@@ -598,7 +662,39 @@
             
             @page {
                 size: A4;
-                margin: 10mm;
+                margin: 15mm;
+            }
+            
+            .report-header {
+                padding: 10px 0;
+                margin-bottom: 15px;
+            }
+            
+            .report-logo {
+                height: 60px;
+                margin-bottom: 10px;
+            }
+            
+            .clinic-name {
+                font-size: 22px;
+            }
+            
+            .doctor-info {
+                font-size: 16px;
+            }
+            
+            .clinic-address {
+                font-size: 14px;
+            }
+            
+            .report-title {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+            
+            .report-row {
+                margin-bottom: 8px;
+                padding-bottom: 8px;
             }
             
             .prescription-only {
@@ -607,7 +703,7 @@
             
             @page prescription {
                 size: A5;
-                margin: 8mm;
+                margin: 10mm;
             }
             
             .prescription-only .report-header,
@@ -1037,47 +1133,101 @@
                 });
         }
         
-        // عرض العلاجات في القائمة (تصميم مضغوط)
+        // عرض العلاجات في القائمة (تصميم مضغوط مع تجميع حسب المريض)
         function displayTreatments(treatmentsToDisplay) {
             const treatmentsList = document.getElementById('treatments-list');
+            treatmentsList.innerHTML = '';
             
             if (treatmentsToDisplay.length === 0) {
                 treatmentsList.innerHTML = '<p style="text-align: center;">لا توجد علاجات تطابق معايير البحث</p>';
                 return;
             }
             
-            treatmentsList.innerHTML = '';
-            
+            // تجميع العلاجات حسب المريض
+            const treatmentsByPatient = {};
             treatmentsToDisplay.forEach(treatment => {
-                const patient = patients.find(p => p.id === treatment.patientId);
-                if (!patient) return; // تخطي العلاجات التي لا يوجد لها مريض
+                const patient = patients.find(p => p.id === treatment.patientId) || {
+                    name: 'مريض غير معروف',
+                    phone: 'غير متوفر',
+                    id: 'unknown'
+                };
                 
-                const treatmentDate = treatment.date ? formatDateWithForeignNumbers(new Date(treatment.date)) : 'غير محدد';
+                if (!treatmentsByPatient[patient.id]) {
+                    treatmentsByPatient[patient.id] = {
+                        patient,
+                        treatments: []
+                    };
+                }
+                treatmentsByPatient[patient.id].treatments.push(treatment);
+            });
+            
+            // عرض العلاجات المجمعة
+            Object.values(treatmentsByPatient).forEach(patientGroup => {
+                const groupElement = document.createElement('div');
+                groupElement.className = 'patient-treatment-group';
                 
-                const treatmentElement = document.createElement('div');
-                treatmentElement.className = 'compact-treatment';
-                treatmentElement.innerHTML = `
-                    <div class="compact-treatment-info">
-                        <div class="patient-avatar">${patient.name.charAt(0)}</div>
+                const headerElement = document.createElement('div');
+                headerElement.className = 'patient-header';
+                headerElement.innerHTML = `
+                    <div class="patient-info">
+                        <div class="patient-avatar">${patientGroup.patient.name.charAt(0)}</div>
                         <div>
-                            <h4 style="margin: 0;">${patient.name}</h4>
-                            <small>${treatment.type} - ${treatmentDate}</small>
+                            <div class="patient-name">${patientGroup.patient.name}</div>
+                            <div class="patient-phone">${patientGroup.patient.phone}</div>
                         </div>
                     </div>
-                    <div class="compact-treatment-actions">
-                        <button class="view-treatment-btn" onclick="viewTreatmentDetails('${treatment.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-warning btn-sm" onclick="editTreatment('${treatment.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteTreatment('${treatment.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+                    <div class="toggle-treatments"><i class="fas fa-chevron-down"></i></div>
                 `;
                 
-                treatmentsList.appendChild(treatmentElement);
+                const treatmentsContainer = document.createElement('div');
+                treatmentsContainer.className = 'patient-treatments';
+                
+                patientGroup.treatments.forEach(treatment => {
+                    const treatmentDate = treatment.date ? formatDateWithForeignNumbers(new Date(treatment.date)) : 'غير محدد';
+                    
+                    const treatmentElement = document.createElement('div');
+                    treatmentElement.className = 'compact-treatment';
+                    treatmentElement.innerHTML = `
+                        <div class="compact-treatment-info">
+                            <div>
+                                <div>${treatment.type}</div>
+                                <small>${treatmentDate}</small>
+                            </div>
+                        </div>
+                        <div class="compact-treatment-actions">
+                            <button class="view-treatment-btn" onclick="viewTreatmentDetails('${treatment.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="editTreatment('${treatment.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteTreatment('${treatment.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    treatmentsContainer.appendChild(treatmentElement);
+                });
+                
+                groupElement.appendChild(headerElement);
+                groupElement.appendChild(treatmentsContainer);
+                treatmentsList.appendChild(groupElement);
+                
+                // إضافة حدث النقر لعرض/إخفاء العلاجات
+                headerElement.addEventListener('click', function() {
+                    const icon = this.querySelector('.toggle-treatments i');
+                    const treatmentsContainer = this.nextElementSibling;
+                    
+                    if (treatmentsContainer.classList.contains('expanded')) {
+                        treatmentsContainer.classList.remove('expanded');
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    } else {
+                        treatmentsContainer.classList.add('expanded');
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    }
+                });
             });
         }
         
@@ -1222,15 +1372,15 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="med-name-${medId}">اسم الدواء</label>
-                        <input type="text" id="med-name-${medId}" class="form-control" value="${medication.name}" placeholder="اسم الدواء">
+                        <input type="text" id="med-name-${medId}" class="form-control" value="${medication.name}" placeholder="اسم الدواء" required>
                     </div>
                     <div class="form-group">
                         <label for="med-dose-${medId}">الجرعة</label>
-                        <input type="text" id="med-dose-${medId}" class="form-control" value="${medication.dose}" placeholder="مثال: 500mg">
+                        <input type="text" id="med-dose-${medId}" class="form-control" value="${medication.dose}" placeholder="مثال: 500mg" required>
                     </div>
                     <div class="form-group">
                         <label for="med-frequency-${medId}">عدد المرات</label>
-                        <input type="text" id="med-frequency-${medId}" class="form-control" value="${medication.frequency}" placeholder="مثال: 3 مرات يومياً">
+                        <input type="text" id="med-frequency-${medId}" class="form-control" value="${medication.frequency}" placeholder="مثال: 3 مرات يومياً" required>
                     </div>
                 </div>
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeMedication(this)" style="margin-top: 10px;">
@@ -1257,11 +1407,17 @@
             
             medicationItems.forEach(item => {
                 const id = item.querySelector('input').id.split('-')[2];
-                medications.push({
-                    name: document.getElementById(`med-name-${id}`).value,
-                    dose: document.getElementById(`med-dose-${id}`).value,
-                    frequency: document.getElementById(`med-frequency-${id}`).value
-                });
+                const name = document.getElementById(`med-name-${id}`).value;
+                const dose = document.getElementById(`med-dose-${id}`).value;
+                const frequency = document.getElementById(`med-frequency-${id}`).value;
+                
+                if (name && dose && frequency) {
+                    medications.push({
+                        name: name,
+                        dose: dose,
+                        frequency: frequency
+                    });
+                }
             });
             
             return medications;
@@ -1282,7 +1438,7 @@
             }
             
             // التحقق من وجود دواء على الأقل
-            if (medications.length === 0 || medications.some(med => !med.name)) {
+            if (medications.length === 0) {
                 alert('الرجاء إدخال وصفة طبية تحتوي على دواء واحد على الأقل');
                 return;
             }
@@ -1390,7 +1546,7 @@
             }
             
             // التحقق من وجود دواء على الأقل
-            if (medications.length === 0 || medications.some(med => !med.name)) {
+            if (medications.length === 0) {
                 alert('الرجاء إدخال وصفة طبية تحتوي على دواء واحد على الأقل');
                 return;
             }
@@ -1593,7 +1749,12 @@
                             </div>
                         `).join('')}
                     </div>
-                ` : ''}
+                ` : `
+                    <div class="report-medications">
+                        <h3 class="report-title">الوصفة الطبية</h3>
+                        <p style="text-align: center; color: var(--gray);">لا توجد وصفة طبية مسجلة</p>
+                    </div>
+                `}
                 
                 <div class="report-footer">
                     <p>شكراً لثقتكم بنا</p>
@@ -1618,7 +1779,7 @@
             const treatment = treatments.find(t => t.id === treatmentId);
             
             if (!treatment || !treatment.medications || treatment.medications.length === 0) {
-                alert('لا توجد وصفة طبية لطباعتها');
+                alert('لا توجد وصفة طبية مسجلة لهذا العلاج');
                 return;
             }
             

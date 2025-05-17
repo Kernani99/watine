@@ -440,7 +440,7 @@
         </div>
     </div>
     
-    <!-- نافذة تسجيل مريض جديد -->
+    <!-- نافذة تسجيل مريض جديد المعدلة -->
     <div id="new-patient-modal" class="modal-overlay">
         <div class="modal-dialog">
             <div class="modal-header">
@@ -452,13 +452,8 @@
                     <input type="hidden" id="patient-id">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="first-name"><i class="fas fa-user"></i> الاسم</label>
-                            <input type="text" id="first-name" class="form-control" required placeholder="الاسم الأول">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="last-name"><i class="fas fa-user"></i> اللقب</label>
-                            <input type="text" id="last-name" class="form-control" required placeholder="اللقب">
+                            <label for="full-name"><i class="fas fa-user"></i> الاسم الكامل</label>
+                            <input type="text" id="full-name" class="form-control" required placeholder="الاسم الكامل للمريض">
                         </div>
                         
                         <div class="form-group">
@@ -653,7 +648,7 @@
             patientsToDisplay.forEach(patient => {
                 tableHTML += `
                     <tr>
-                        <td>${patient.firstName || ''} ${patient.lastName || ''}</td>
+                        <td>${patient.fullName || (patient.firstName + ' ' + patient.lastName) || ''}</td>
                         <td>${patient.phone || 'غير متوفر'}</td>
                         <td>${patient.age || 'غير محدد'}</td>
                         <td>${patient.gender || 'غير محدد'}</td>
@@ -683,6 +678,7 @@
         // فتح نافذة تسجيل مريض جديد
         function openNewPatientModal() {
             document.getElementById('patient-form').reset();
+            document.getElementById('patient-id').value = '';
             document.getElementById('new-patient-modal').style.display = 'flex';
         }
         
@@ -693,8 +689,7 @@
         
         // حفظ المريض في Firebase
         function savePatient() {
-            const firstName = document.getElementById('first-name').value;
-            const lastName = document.getElementById('last-name').value;
+            const fullName = document.getElementById('full-name').value;
             const birthDate = document.getElementById('birth-date').value;
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
@@ -706,14 +701,20 @@
             const notes = document.getElementById('notes').value;
             const patientId = document.getElementById('patient-id').value;
             
-            if (!firstName || !lastName || !phone) {
-                alert('الرجاء إدخال الحقول المطلوبة (الاسم، اللقب، رقم الهاتف)');
+            if (!fullName || !phone) {
+                alert('الرجاء إدخال الحقول المطلوبة (الاسم الكامل، رقم الهاتف)');
                 return;
             }
             
+            // تقسيم الاسم الكامل إلى اسم و لقب (للتوافق مع الإصدار السابق)
+            const nameParts = fullName.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.slice(1).join(' ') || '';
+            
             const patientData = {
-                firstName,
-                lastName,
+                fullName,
+                firstName, // محفوظ للتوافق مع الإصدار السابق
+                lastName,  // محفوظ للتوافق مع الإصدار السابق
                 birthDate,
                 age,
                 gender,
@@ -723,7 +724,7 @@
                 isNewPatient: isNew === 'new',
                 medicalHistory,
                 notes,
-                balance: 0, // رصيد ابتدائي صفر
+                balance: 0,
                 updatedAt: new Date().toISOString()
             };
             
@@ -762,13 +763,16 @@
             const patient = patients.find(p => p.id === patientId);
             if (!patient) return;
             
+            const patientName = patient.fullName || (patient.firstName + ' ' + patient.lastName) || '';
+            const initials = patientName.split(' ').map(n => n.charAt(0)).join('');
+            
             let patientHTML = `
                 <div class="patient-card">
                     <div class="patient-avatar">
-                        ${patient.firstName ? patient.firstName.charAt(0) : ''}${patient.lastName ? patient.lastName.charAt(0) : ''}
+                        ${initials}
                     </div>
                     <div class="patient-info">
-                        <div class="patient-name">${patient.firstName || ''} ${patient.lastName || ''}</div>
+                        <div class="patient-name">${patientName}</div>
                         <div class="patient-meta">
                             <div class="patient-meta-item">
                                 <i class="fas fa-phone"></i> ${patient.phone || 'غير متوفر'}
@@ -852,8 +856,7 @@
             
             // تعبئة النموذج ببيانات المريض
             document.getElementById('patient-id').value = patientId;
-            document.getElementById('first-name').value = patient.firstName || '';
-            document.getElementById('last-name').value = patient.lastName || '';
+            document.getElementById('full-name').value = patient.fullName || (patient.firstName + ' ' + patient.lastName) || '';
             document.getElementById('birth-date').value = patient.birthDate || '';
             document.getElementById('age').value = patient.age || '';
             document.getElementById('gender').value = patient.gender || '';
@@ -895,7 +898,7 @@
             }
             
             const filteredPatients = patients.filter(patient => {
-                const fullName = `${patient.firstName || ''} ${patient.lastName || ''}`.toLowerCase();
+                const fullName = (patient.fullName || (patient.firstName + ' ' + patient.lastName) || '').toLowerCase();
                 return (
                     fullName.includes(searchTerm) ||
                     (patient.phone && patient.phone.includes(searchTerm))

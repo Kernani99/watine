@@ -131,6 +131,73 @@
             background-color: var(--primary);
         }
         
+        /* عدادات المواعيد */
+        .appointments-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-card.today {
+            border-top-color: var(--primary);
+        }
+        
+        .stat-card.completed {
+            border-top-color: var(--success);
+        }
+        
+        .stat-card.upcoming {
+            border-top-color: var(--warning);
+        }
+        
+        .stat-card.waiting {
+            border-top-color: var(--danger);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 5px 0;
+            color: var(--dark);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .stat-card.today .stat-icon {
+            color: var(--primary);
+        }
+        
+        .stat-card.completed .stat-icon {
+            color: var(--success);
+        }
+        
+        .stat-card.upcoming .stat-icon {
+            color: var(--warning);
+        }
+        
+        .stat-card.waiting .stat-icon {
+            color: var(--danger);
+        }
+        
         .card {
             background-color: var(--white);
             border-radius: 15px;
@@ -482,6 +549,16 @@
                 flex-wrap: wrap;
                 justify-content: center;
             }
+            
+            .appointments-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .appointments-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -502,15 +579,40 @@
     <nav>
         <ul>
             <li><a href="#" id="home-link"><i class="fas fa-home"></i> الرئيسية</a></li>
-            <li><a href="/patient" id="patients-link"><i class="fas fa-user-injured"></i> المرضى</a></li>
+            <li><a href="#" id="patients-link"><i class="fas fa-user-injured"></i> المرضى</a></li>
             <li><a href="#" id="appointments-link" class="active"><i class="fas fa-calendar-check"></i> المواعيد</a></li>
+            <li><a href="#" id="treatments-link"><i class="fas fa-teeth"></i> العلاجات</a></li>
         </ul>
     </nav>
     
     <div class="container">
+        <!-- عدادات المواعيد -->
+        <div class="appointments-stats">
+            <div class="stat-card today">
+                <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                <div class="stat-value" id="today-count">0</div>
+                <div class="stat-label">مواعيد اليوم</div>
+            </div>
+            <div class="stat-card upcoming">
+                <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="stat-value" id="upcoming-count">0</div>
+                <div class="stat-label">مواعيد قادمة</div>
+            </div>
+            <div class="stat-card completed">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-value" id="completed-count">0</div>
+                <div class="stat-label">مواعيد مكتملة</div>
+            </div>
+            <div class="stat-card waiting">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-value" id="waiting-count">0</div>
+                <div class="stat-label">في الانتظار</div>
+            </div>
+        </div>
+        
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 class="card-title"><i class="fas fa-calendar-check"></i> إدارة المواعيد</h2>
+                <h2 class="card-title"><i class="fas fa-calendar-check"></i> قائمة المواعيد</h2>
                 <button id="new-appointment-btn" class="btn btn-primary">
                     <i class="fas fa-plus"></i> موعد جديد
                 </button>
@@ -625,12 +727,16 @@
         // متغيرات التطبيق
         let appointments = [];
         let patients = [];
+        let todayAppointmentsCount = 0;
+        let upcomingAppointmentsCount = 0;
+        let completedAppointmentsCount = 0;
+        let waitingAppointmentsCount = 0;
         
         // عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
             // تحميل قائمة المواعيد والمرضى
-            loadAppointments();
             loadPatients();
+            loadAppointments();
             
             // فتح نافذة إضافة موعد جديد
             document.getElementById('new-appointment-btn').addEventListener('click', openNewAppointmentModal);
@@ -647,32 +753,6 @@
             });
         });
         
-        // تحميل قائمة المواعيد من Firebase
-        function loadAppointments() {
-            const appointmentsList = document.getElementById('appointments-list');
-            appointmentsList.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المواعيد...</p>';
-            
-            appointmentsRef.on('value', function(snapshot) {
-                appointments = [];
-                appointmentsList.innerHTML = '';
-                
-                const appointmentsData = snapshot.val();
-                if (appointmentsData) {
-                    Object.entries(appointmentsData).forEach(([id, appointment]) => {
-                        appointments.push({ id, ...appointment });
-                    });
-                    
-                    // عرض المواعيد بعد الفرز حسب التاريخ
-                    displayAppointments(appointments.sort((a, b) => new Date(a.date) - new Date(b.date)));
-                } else {
-                    appointmentsList.innerHTML = '<p style="text-align: center;">لا توجد مواعيد مسجلة بعد</p>';
-                }
-            }, function(error) {
-                console.error("Error loading appointments:", error);
-                appointmentsList.innerHTML = '<p style="text-align: center;">حدث خطأ في تحميل المواعيد</p>';
-            });
-        }
-        
         // تحميل قائمة المرضى من Firebase
         function loadPatients() {
             patientsRef.once('value')
@@ -681,13 +761,84 @@
                     const patientsData = snapshot.val();
                     if (patientsData) {
                         Object.entries(patientsData).forEach(([id, patient]) => {
-                            patients.push({ id, ...patient });
+                            // دعم البيانات القديمة والجديدة
+                            const fullName = patient.fullName || 
+                                           (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
+                            patients.push({ 
+                                id, 
+                                ...patient,
+                                fullName,
+                                phone: patient.phone || 'بدون رقم'
+                            });
                         });
                     }
                 })
                 .catch(error => {
                     console.error("Error loading patients:", error);
                 });
+        }
+        
+        // تحميل قائمة المواعيد من Firebase
+        function loadAppointments() {
+            const appointmentsList = document.getElementById('appointments-list');
+            appointmentsList.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المواعيد...</p>';
+            
+            appointmentsRef.on('value', function(snapshot) {
+                appointments = [];
+                todayAppointmentsCount = 0;
+                upcomingAppointmentsCount = 0;
+                completedAppointmentsCount = 0;
+                waitingAppointmentsCount = 0;
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const appointmentsData = snapshot.val();
+                if (appointmentsData) {
+                    Object.entries(appointmentsData).forEach(([id, appointment]) => {
+                        const appointmentDate = new Date(appointment.date);
+                        
+                        // حساب عدد المواعيد لكل حالة
+                        if (appointment.status === 'completed') {
+                            completedAppointmentsCount++;
+                        } else if (appointment.status === 'upcoming') {
+                            upcomingAppointmentsCount++;
+                        } else if (appointment.status === 'waiting') {
+                            waitingAppointmentsCount++;
+                        }
+                        
+                        // حساب مواعيد اليوم
+                        const appointmentDay = new Date(appointmentDate);
+                        appointmentDay.setHours(0, 0, 0, 0);
+                        
+                        if (appointmentDay.getTime() === today.getTime()) {
+                            todayAppointmentsCount++;
+                        }
+                        
+                        appointments.push({ id, ...appointment });
+                    });
+                    
+                    // تحديث العدادات
+                    updateAppointmentsCounters();
+                    
+                    // عرض المواعيد بعد الفرز حسب التاريخ
+                    displayAppointments(appointments.sort((a, b) => new Date(a.date) - new Date(b.date)));
+                } else {
+                    appointmentsList.innerHTML = '<p style="text-align: center;">لا توجد مواعيد مسجلة بعد</p>';
+                    updateAppointmentsCounters();
+                }
+            }, function(error) {
+                console.error("Error loading appointments:", error);
+                appointmentsList.innerHTML = '<p style="text-align: center;">حدث خطأ في تحميل المواعيد</p>';
+            });
+        }
+        
+        // تحديث عدادات المواعيد
+        function updateAppointmentsCounters() {
+            document.getElementById('today-count').textContent = todayAppointmentsCount;
+            document.getElementById('upcoming-count').textContent = upcomingAppointmentsCount;
+            document.getElementById('completed-count').textContent = completedAppointmentsCount;
+            document.getElementById('waiting-count').textContent = waitingAppointmentsCount;
         }
         
         // عرض المواعيد في القائمة
@@ -707,9 +858,7 @@
                     phone: 'بدون رقم'
                 };
                 
-                const patientName = patient.fullName || (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
-                const initials = patientName.split(' ').map(n => n.charAt(0)).join('').substring(0, 2);
-                
+                const initials = patient.fullName.split(' ').map(n => n.charAt(0)).join('').substring(0, 2);
                 const appointmentDate = new Date(appointment.date);
                 const formattedDate = formatArabicDate(appointmentDate);
                 
@@ -719,8 +868,8 @@
                             <div class="appointment-patient">
                                 <div class="patient-avatar">${initials}</div>
                                 <div>
-                                    <h4 style="margin: 0;">${patientName}</h4>
-                                    <small>${patient.phone || 'بدون رقم'}</small>
+                                    <h4 style="margin: 0;">${patient.fullName}</h4>
+                                    <small>${patient.phone}</small>
                                 </div>
                             </div>
                             <span class="status-badge ${appointment.status}">
@@ -781,11 +930,26 @@
             const patientSelect = document.getElementById('appointment-patient');
             patientSelect.innerHTML = '<option value="">اختر مريضاً...</option>';
             
+            if (patients.length === 0) {
+                patientSelect.innerHTML = '<option value="">جاري تحميل قائمة المرضى...</option>';
+                loadPatients();
+                setTimeout(() => {
+                    populatePatientSelect();
+                }, 1000);
+            } else {
+                populatePatientSelect();
+            }
+        }
+        
+        // تعبئة قائمة المرضى في القائمة المنسدلة
+        function populatePatientSelect() {
+            const patientSelect = document.getElementById('appointment-patient');
+            patientSelect.innerHTML = '<option value="">اختر مريضاً...</option>';
+            
             patients.forEach(patient => {
-                const patientName = patient.fullName || (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
                 const option = document.createElement('option');
                 option.value = patient.id;
-                option.textContent = `${patientName} - ${patient.phone || 'بدون رقم'}`;
+                option.textContent = `${patient.fullName} - ${patient.phone}`;
                 patientSelect.appendChild(option);
             });
         }
@@ -815,12 +979,10 @@
                 return;
             }
             
-            const patientName = patient.fullName || (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
-            
             const appointmentData = {
                 patientId,
-                patientName,
-                patientPhone: patient.phone || '',
+                patientName: patient.fullName,
+                patientPhone: patient.phone,
                 date: dateTime,
                 status,
                 type,
@@ -946,12 +1108,11 @@
                     phone: 'بدون رقم'
                 };
                 
-                const patientName = patient.fullName || (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
                 const appointmentDate = new Date(appointment.date);
                 const formattedDate = formatArabicDate(appointmentDate);
                 
-                return patientName.toLowerCase().includes(searchTerm) || 
-                       patient.phone?.toLowerCase().includes(searchTerm) || 
+                return patient.fullName.toLowerCase().includes(searchTerm) || 
+                       patient.phone.toLowerCase().includes(searchTerm) || 
                        formattedDate.toLowerCase().includes(searchTerm) ||
                        appointment.notes?.toLowerCase().includes(searchTerm);
             });

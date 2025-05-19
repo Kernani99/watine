@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة عيادة الأسنان</title>
+    <title>نظام إدارة عيادة واتين للأسنان</title>
     <style>
         :root {
             --primary: #a76dac;
@@ -415,6 +415,109 @@
             border: 2px solid var(--primary);
         }
         
+        /* تحسينات جديدة */
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .status-completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-canceled {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .upcoming-appointments {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .appointment-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .appointment-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .appointment-card-time {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .appointment-card-patient {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .appointment-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: var(--light-pink);
+        }
+        
         @media (max-width: 768px) {
             .quick-actions {
                 grid-template-columns: 1fr 1fr;
@@ -431,6 +534,10 @@
             
             .clinic-logo {
                 height: 60px;
+            }
+            
+            .upcoming-appointments {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -464,10 +571,11 @@
             <div class="header-content">
                 <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="clinic-logo">
                 <div class="header-text">
-                    <h1><i class="fas fa-tooth"></i> نظام إدارة عيادة الأسنان</h1>
+                    <h1><i class="fas fa-tooth"></i> نظام إدارة عيادة واتين للأسنان</h1>
                     <div class="header-info">
                         <span><i class="fas fa-hospital"></i> عيادة واتين للأسنان</span>
                         <span><i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر</span>
+                        <span><i class="fas fa-calendar-alt"></i> <span id="current-date"></span></span>
                     </div>
                 </div>
             </div>
@@ -476,54 +584,81 @@
         <div class="container">
             <!-- قسم الرئيسية -->
             <div id="home-section">
-                <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
-                
-                <!-- إجراءات سريعة -->
-                <div class="quick-actions">
-                    <a href="#rv" class="quick-action">
-                        <i class="fas fa-calendar-plus"></i>
-                        <h3>حجز موعد جديد</h3>
-                    </a>
-                    <a href="#patient" class="quick-action">
-                        <i class="fas fa-user-plus"></i>
-                        <h3>إضافة مريض جديد</h3>
-                    </a>
-                    <a href="#payment" class="quick-action">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <h3>إدارة المدفوعات</h3>
-                    </a>
-                    <a href="#consultation" class="quick-action">
-                        <i class="fas fa-teeth"></i>
-                        <h3>تسجيل علاج جديد</h3>
-                    </a>
-                </div>
-                
-                <!-- إحصائيات سريعة -->
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <h3>عدد المرضى</h3>
-                        <div class="value" id="patients-count">0</div>
-                        <div><span class="badge primary"><i class="fas fa-user-plus"></i> <span id="new-patients-count">0</span> جديد هذا الشهر</span></div>
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
+                    
+                    <!-- إجراءات سريعة -->
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="showAddAppointmentModal()">
+                            <i class="fas fa-calendar-plus"></i>
+                            <h3>حجز موعد جديد</h3>
+                        </div>
+                        <div class="quick-action" onclick="showAddPatientModal()">
+                            <i class="fas fa-user-plus"></i>
+                            <h3>إضافة مريض جديد</h3>
+                        </div>
+                        <div class="quick-action" onclick="showPaymentsSection()">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3>إدارة المدفوعات</h3>
+                        </div>
+                        <div class="quick-action" onclick="showTreatmentsSection()">
+                            <i class="fas fa-teeth"></i>
+                            <h3>تسجيل علاج جديد</h3>
+                        </div>
                     </div>
                     
-                    <div class="stat-card">
-                        <h3>مواعيد اليوم</h3>
-                        <div class="value" id="appointments-today">0</div>
-                        <div><span class="badge success"><i class="fas fa-check"></i> <span id="completed-appointments">0</span> مكتملة</span></div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <h3>إجمالي المدفوعات اليوم</h3>
-                        <div class="value" id="today-income">0 د.ج</div>
-                        <div><span class="badge"><i class="fas fa-calendar-day"></i> اليوم</span></div>
+                    <!-- إحصائيات سريعة -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <h3>عدد المرضى</h3>
+                            <div class="value" id="patients-count">0</div>
+                            <div><span class="badge primary"><i class="fas fa-user-plus"></i> <span id="new-patients-count">0</span> جديد هذا الشهر</span></div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>مواعيد اليوم</h3>
+                            <div class="value" id="appointments-today">0</div>
+                            <div><span class="badge success"><i class="fas fa-check"></i> <span id="completed-appointments">0</span> مكتملة</span></div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>إجمالي المدفوعات اليوم</h3>
+                            <div class="value" id="today-income">0 د.ج</div>
+                            <div><span class="badge"><i class="fas fa-calendar-day"></i> اليوم</span></div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>المواعيد القادمة</h3>
+                            <div class="value" id="upcoming-appointments-count">0</div>
+                            <div><span class="badge warning"><i class="fas fa-clock"></i> خلال 7 أيام</span></div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- مواعيد اليوم -->
                 <div class="card">
-                    <h3 class="card-title"><i class="fas fa-clock"></i> مواعيد اليوم</h3>
-                    <div id="today-appointments-list" class="today-appointments">
-                        <p>لا توجد مواعيد لليوم.</p>
+                    <div class="card-title">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>مواعيد اليوم (<span id="today-date"></span>)</span>
+                        <button class="btn btn-primary btn-sm" onclick="refreshAppointments()" style="margin-right: auto; padding: 8px 15px;">
+                            <i class="fas fa-sync-alt"></i> تحديث
+                        </button>
+                    </div>
+                    
+                    <div id="today-appointments-list" class="upcoming-appointments">
+                        <!-- سيتم ملؤها بالبيانات -->
+                    </div>
+                </div>
+                
+                <!-- المواعيد القادمة -->
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>المواعيد القادمة</span>
+                    </div>
+                    
+                    <div id="upcoming-appointments-list" class="upcoming-appointments">
+                        <!-- سيتم ملؤها بالبيانات -->
                     </div>
                 </div>
             </div>
@@ -644,22 +779,23 @@
     <!-- إضافة مكتبات Firebase مباشرة في HTML -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
     <script>
-        // تهيئة Firebase
+        // تهيئة Firebase مع قاعدة البيانات الجديدة
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyD7wJ5wK5z5X5X5X5X5X5X5X5X5X5X5X5X",
+            authDomain: "watine-b8878.firebaseapp.com",
+            databaseURL: "https://watine-b8878-default-rtdb.firebaseio.com",
+            projectId: "watine-b8878",
+            storageBucket: "watine-b8878.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:5X5X5X5X5X5X5X5X5X5X5X"
         };
         
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const database = firebase.database();
         const auth = firebase.auth();
         
         // كلمة المرور الثابتة للنظام
@@ -679,20 +815,30 @@
                     .then(() => {
                         document.getElementById('login-page').style.display = 'none';
                         document.getElementById('dashboard').style.display = 'block';
+                        
+                        // تحديث التاريخ الحالي
+                        updateCurrentDate();
+                        
+                        // تحميل البيانات
                         loadPatients();
                         loadTodayAppointments();
+                        loadUpcomingAppointments();
                         loadPayments();
-                        updateStats();
                     })
                     .catch((error) => {
                         console.error("Anonymous sign-in error:", error);
                         // في حالة الخطأ، نعتمد على النظام بدون Firebase Auth
                         document.getElementById('login-page').style.display = 'none';
                         document.getElementById('dashboard').style.display = 'block';
+                        
+                        // تحديث التاريخ الحالي
+                        updateCurrentDate();
+                        
+                        // تحميل البيانات
                         loadPatients();
                         loadTodayAppointments();
+                        loadUpcomingAppointments();
                         loadPayments();
-                        updateStats();
                     });
             } else {
                 // كلمة مرور خاطئة
@@ -701,114 +847,453 @@
             }
         }
         
-        // تسجيل الخروج
-        function logout() {
-            auth.signOut().then(() => {
-                document.getElementById('login-page').style.display = 'block';
-                document.getElementById('dashboard').style.display = 'none';
-                document.getElementById('login-password').value = '';
-                document.getElementById('login-error').style.display = 'none';
-            }).catch((error) => {
-                console.error("Logout error:", error);
-                document.getElementById('login-page').style.display = 'block';
-                document.getElementById('dashboard').style.display = 'none';
-                document.getElementById('login-password').value = '';
-                document.getElementById('login-error').style.display = 'none';
+        // تحديث التاريخ الحالي
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('ar-EG', options);
+            document.getElementById('current-date').textContent = dateString;
+            document.getElementById('today-date').textContent = dateString;
+        }
+        
+        // تحميل قائمة المرضى من قاعدة البيانات الجديدة
+        function loadPatients() {
+            const patientsRef = database.ref('Watine/patients');
+            
+            patientsRef.on('value', (snapshot) => {
+                const patients = snapshot.val();
+                let patientsCount = 0;
+                let newPatientsCount = 0;
+                
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth();
+                const currentYear = currentDate.getFullYear();
+                
+                if (patients) {
+                    patientsCount = Object.keys(patients).length;
+                    
+                    // حساب عدد المرضى الجدد هذا الشهر
+                    Object.values(patients).forEach(patient => {
+                        if (patient.createdAt) {
+                            const createdAt = new Date(patient.createdAt);
+                            if (createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear) {
+                                newPatientsCount++;
+                            }
+                        }
+                    });
+                }
+                
+                document.getElementById('patients-count').textContent = patientsCount;
+                document.getElementById('new-patients-count').textContent = newPatientsCount;
+                
+                // تحديث قائمة المرضى في نموذج حجز الموعد
+                updatePatientsDropdown();
+            }, (error) => {
+                console.error("Error loading patients: ", error);
             });
         }
         
-        // تحميل قائمة المرضى
-        function loadPatients() {
-            db.collection('patients').get()
-                .then((querySnapshot) => {
-                    document.getElementById('patients-count').textContent = querySnapshot.size;
-                    
-                    // حساب عدد المرضى الجدد هذا الشهر
-                    const currentMonth = new Date().getMonth();
-                    const currentYear = new Date().getFullYear();
-                    let newPatientsCount = 0;
-                    
-                    querySnapshot.forEach((doc) => {
-                        const patient = doc.data();
-                        const createdAt = patient.createdAt ? patient.createdAt.toDate() : new Date();
-                        
-                        if (createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear) {
-                            newPatientsCount++;
-                        }
+        // تحديث قائمة المرضى في نموذج حجز الموعد
+        function updatePatientsDropdown() {
+            const patientsRef = database.ref('Watine/patients');
+            const dropdown = document.getElementById('appointment-patient');
+            
+            // مسح الخيارات الحالية
+            while (dropdown.options.length > 1) {
+                dropdown.remove(1);
+            }
+            
+            patientsRef.once('value').then((snapshot) => {
+                const patients = snapshot.val();
+                
+                if (patients) {
+                    Object.entries(patients).forEach(([id, patient]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = `${patient.name} - ${patient.phone}`;
+                        dropdown.appendChild(option);
                     });
-                    
-                    document.getElementById('new-patients-count').textContent = newPatientsCount;
-                })
-                .catch((error) => {
-                    console.error("Error loading patients: ", error);
-                });
+                }
+            });
         }
         
-        // تحميل مواعيد اليوم
+        // تحميل مواعيد اليوم من قاعدة البيانات الجديدة
         function loadTodayAppointments() {
             const today = new Date().toISOString().split('T')[0];
+            const appointmentsRef = database.ref('Watine/appointments');
             const appointmentsList = document.getElementById('today-appointments-list');
             
-            db.collection('appointments').where('date', '==', today).orderBy('time').get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        appointmentsList.innerHTML = '<p>لا توجد مواعيد لاليوم.</p>';
-                        document.getElementById('appointments-today').textContent = '0';
-                        document.getElementById('completed-appointments').textContent = '0';
-                        return;
+            appointmentsRef.orderByChild('date').equalTo(today).on('value', (snapshot) => {
+                const appointments = snapshot.val();
+                let completedCount = 0;
+                
+                if (!appointments) {
+                    appointmentsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="far fa-calendar-check"></i>
+                            <h3>لا توجد مواعيد لليوم</h3>
+                            <p>يمكنك إضافة مواعيد جديدة بالنقر على زر "حجز موعد جديد"</p>
+                        </div>
+                    `;
+                    document.getElementById('appointments-today').textContent = '0';
+                    document.getElementById('completed-appointments').textContent = '0';
+                    return;
+                }
+                
+                let html = '';
+                const appointmentsArray = Object.entries(appointments);
+                
+                appointmentsArray.forEach(([id, appointment]) => {
+                    if (appointment.status === 'completed') {
+                        completedCount++;
                     }
                     
-                    let html = '';
-                    let completedCount = 0;
-                    
-                    querySnapshot.forEach((doc) => {
-                        const appointment = doc.data();
-                        if (appointment.status === 'completed') {
-                            completedCount++;
-                        }
+                    // الحصول على بيانات المريض
+                    getPatientById(appointment.patientId).then(patient => {
+                        const patientName = patient ? patient.name : 'مريض غير معروف';
+                        const patientPhone = patient ? patient.phone : '';
                         
-                        // هنا يمكنك إضافة كود لعرض المواعيد إذا كنت تريد عرضها
+                        html += `
+                            <div class="appointment-card">
+                                <div class="appointment-card-header">
+                                    <span class="appointment-card-time">
+                                        <i class="far fa-clock"></i> ${appointment.time}
+                                    </span>
+                                    <span class="status-badge ${getStatusClass(appointment.status)}">
+                                        ${getStatusText(appointment.status)}
+                                    </span>
+                                </div>
+                                <div class="appointment-card-patient">
+                                    <div class="patient-avatar">
+                                        ${patientName.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h4>${patientName}</h4>
+                                        <p>${patientPhone}</p>
+                                    </div>
+                                </div>
+                                <p class="appointment-reason">${appointment.reason || 'لا يوجد سبب محدد'}</p>
+                                <div class="appointment-card-actions">
+                                    <button class="btn btn-sm btn-success" onclick="completeAppointment('${id}')">
+                                        <i class="fas fa-check"></i> إكمال
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${id}')">
+                                        <i class="fas fa-times"></i> إلغاء
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        appointmentsList.innerHTML = html;
                     });
-                    
-                    document.getElementById('appointments-today').textContent = querySnapshot.size;
-                    document.getElementById('completed-appointments').textContent = completedCount;
-                    
-                    // إذا كنت تريد عرض قائمة بالمواعيد، يمكنك إضافة الكود هنا
-                    appointmentsList.innerHTML = '<p>يتم تحميل قائمة المواعيد...</p>';
-                })
-                .catch((error) => {
-                    appointmentsList.innerHTML = '<p style="color: var(--danger);">حدث خطأ في تحميل المواعيد</p>';
-                    console.error("Error loading appointments: ", error);
                 });
+                
+                document.getElementById('appointments-today').textContent = appointmentsArray.length;
+                document.getElementById('completed-appointments').textContent = completedCount;
+            }, (error) => {
+                appointmentsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>حدث خطأ في تحميل المواعيد</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                console.error("Error loading appointments: ", error);
+            });
         }
         
-        // تحميل المدفوعات اليومية
+        // تحميل المواعيد القادمة (خلال 7 أيام)
+        function loadUpcomingAppointments() {
+            const today = new Date().toISOString().split('T')[0];
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            const nextWeekStr = nextWeek.toISOString().split('T')[0];
+            
+            const appointmentsRef = database.ref('Watine/appointments');
+            const upcomingList = document.getElementById('upcoming-appointments-list');
+            
+            appointmentsRef.orderByChild('date').startAt(today).endAt(nextWeekStr).on('value', (snapshot) => {
+                const appointments = snapshot.val();
+                
+                if (!appointments) {
+                    upcomingList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="far fa-calendar-check"></i>
+                            <h3>لا توجد مواعيد قادمة</h3>
+                            <p>يمكنك إضافة مواعيد جديدة بالنقر على زر "حجز موعد جديد"</p>
+                        </div>
+                    `;
+                    document.getElementById('upcoming-appointments-count').textContent = '0';
+                    return;
+                }
+                
+                let html = '';
+                const appointmentsArray = Object.entries(appointments);
+                
+                // تصفية مواعيد اليوم لأنها معروضة في قسم آخر
+                const filteredAppointments = appointmentsArray.filter(([id, app]) => app.date !== today);
+                
+                filteredAppointments.forEach(([id, appointment]) => {
+                    // الحصول على بيانات المريض
+                    getPatientById(appointment.patientId).then(patient => {
+                        const patientName = patient ? patient.name : 'مريض غير معروف';
+                        const patientPhone = patient ? patient.phone : '';
+                        
+                        const dateObj = new Date(appointment.date);
+                        const dateStr = dateObj.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
+                        
+                        html += `
+                            <div class="appointment-card">
+                                <div class="appointment-card-header">
+                                    <span class="appointment-card-time">
+                                        <i class="far fa-calendar-alt"></i> ${dateStr}
+                                        <i class="far fa-clock"></i> ${appointment.time}
+                                    </span>
+                                    <span class="status-badge ${getStatusClass(appointment.status)}">
+                                        ${getStatusText(appointment.status)}
+                                    </span>
+                                </div>
+                                <div class="appointment-card-patient">
+                                    <div class="patient-avatar">
+                                        ${patientName.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h4>${patientName}</h4>
+                                        <p>${patientPhone}</p>
+                                    </div>
+                                </div>
+                                <p class="appointment-reason">${appointment.reason || 'لا يوجد سبب محدد'}</p>
+                                <div class="appointment-card-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="editAppointment('${id}')">
+                                        <i class="fas fa-edit"></i> تعديل
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${id}')">
+                                        <i class="fas fa-times"></i> إلغاء
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        upcomingList.innerHTML = html;
+                    });
+                });
+                
+                document.getElementById('upcoming-appointments-count').textContent = filteredAppointments.length;
+            }, (error) => {
+                upcomingList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>حدث خطأ في تحميل المواعيد القادمة</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                console.error("Error loading upcoming appointments: ", error);
+            });
+        }
+        
+        // تحميل المدفوعات اليومية من قاعدة البيانات الجديدة
         function loadPayments() {
             const today = new Date().toISOString().split('T')[0];
+            const paymentsRef = database.ref('Watine/payments');
             
-            db.collection('payments').where('date', '==', today).get()
-                .then((querySnapshot) => {
-                    let totalIncome = 0;
-                    
-                    querySnapshot.forEach((doc) => {
-                        const payment = doc.data();
+            paymentsRef.orderByChild('date').equalTo(today).on('value', (snapshot) => {
+                const payments = snapshot.val();
+                let totalIncome = 0;
+                
+                if (payments) {
+                    Object.values(payments).forEach(payment => {
                         if (payment.status === 'completed') {
                             totalIncome += parseFloat(payment.amount) || 0;
                         }
                     });
-                    
-                    document.getElementById('today-income').textContent = totalIncome.toFixed(2) + ' د.ج';
+                }
+                
+                document.getElementById('today-income').textContent = totalIncome.toFixed(2) + ' د.ج';
+            }, (error) => {
+                console.error("Error loading payments: ", error);
+            });
+        }
+        
+        // الحصول على بيانات المريض بواسطة ID
+        function getPatientById(patientId) {
+            return database.ref(`Watine/patients/${patientId}`).once('value')
+                .then(snapshot => snapshot.val());
+        }
+        
+        // الحصول على نص حالة الموعد
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'معلق';
+                case 'completed': return 'مكتمل';
+                case 'canceled': return 'ملغى';
+                default: return 'غير معروف';
+            }
+        }
+        
+        // الحصول على كلاس حالة الموعد
+        function getStatusClass(status) {
+            switch(status) {
+                case 'pending': return 'status-pending';
+                case 'completed': return 'status-completed';
+                case 'canceled': return 'status-canceled';
+                default: return '';
+            }
+        }
+        
+        // إضافة مريض جديد
+        function addPatient() {
+            const name = document.getElementById('patient-name').value;
+            const age = document.getElementById('patient-age').value;
+            const phone = document.getElementById('patient-phone').value;
+            const gender = document.getElementById('patient-gender').value;
+            const address = document.getElementById('patient-address').value;
+            const notes = document.getElementById('patient-notes').value;
+            
+            if (!name || !age || !phone || !gender) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const newPatient = {
+                name,
+                age,
+                phone,
+                gender,
+                address,
+                notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            database.ref('Watine/patients').push(newPatient)
+                .then(() => {
+                    alert('تمت إضافة المريض بنجاح');
+                    closeAddPatientModal();
+                    loadPatients();
                 })
-                .catch((error) => {
-                    console.error("Error loading payments: ", error);
+                .catch(error => {
+                    console.error("Error adding patient: ", error);
+                    alert('حدث خطأ أثناء إضافة المريض');
                 });
         }
         
-        // تحديث الإحصائيات
-        function updateStats() {
-            loadPatients();
+        // إضافة موعد جديد
+        function addAppointment() {
+            const patientId = document.getElementById('appointment-patient').value;
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const reason = document.getElementById('appointment-reason').value;
+            
+            if (!patientId || !date || !time) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const newAppointment = {
+                patientId,
+                date,
+                time,
+                reason,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            database.ref('Watine/appointments').push(newAppointment)
+                .then(() => {
+                    alert('تمت إضافة الموعد بنجاح');
+                    closeAddAppointmentModal();
+                    loadTodayAppointments();
+                    loadUpcomingAppointments();
+                })
+                .catch(error => {
+                    console.error("Error adding appointment: ", error);
+                    alert('حدث خطأ أثناء إضافة الموعد');
+                });
+        }
+        
+        // إكمال الموعد
+        function completeAppointment(appointmentId) {
+            if (confirm('هل تريد تأكيد إكمال هذا الموعد؟')) {
+                database.ref(`Watine/appointments/${appointmentId}`).update({
+                    status: 'completed'
+                })
+                .then(() => {
+                    loadTodayAppointments();
+                    loadUpcomingAppointments();
+                })
+                .catch(error => {
+                    console.error("Error completing appointment: ", error);
+                    alert('حدث خطأ أثناء تحديث حالة الموعد');
+                });
+            }
+        }
+        
+        // إلغاء الموعد
+        function cancelAppointment(appointmentId) {
+            if (confirm('هل تريد تأكيد إلغاء هذا الموعد؟')) {
+                database.ref(`Watine/appointments/${appointmentId}`).update({
+                    status: 'canceled'
+                })
+                .then(() => {
+                    loadTodayAppointments();
+                    loadUpcomingAppointments();
+                })
+                .catch(error => {
+                    console.error("Error canceling appointment: ", error);
+                    alert('حدث خطأ أثناء تحديث حالة الموعد');
+                });
+            }
+        }
+        
+        // تعديل الموعد
+        function editAppointment(appointmentId) {
+            // يمكن تنفيذ هذه الوظيفة حسب الحاجة
+            alert('وظيفة التعديل قيد التطوير');
+        }
+        
+        // عرض نافذة إضافة مريض
+        function showAddPatientModal() {
+            document.getElementById('add-patient-modal').style.display = 'block';
+            document.getElementById('patient-name').focus();
+        }
+        
+        // إغلاق نافذة إضافة مريض
+        function closeAddPatientModal() {
+            document.getElementById('add-patient-modal').style.display = 'none';
+            document.getElementById('add-patient-form').reset();
+        }
+        
+        // عرض نافذة إضافة موعد
+        function showAddAppointmentModal() {
+            document.getElementById('add-appointment-modal').style.display = 'block';
+            document.getElementById('appointment-date').focus();
+            
+            // تعيين تاريخ اليوم كقيمة افتراضية
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointment-date').value = today;
+        }
+        
+        // إغلاق نافذة إضافة موعد
+        function closeAddAppointmentModal() {
+            document.getElementById('add-appointment-modal').style.display = 'none';
+            document.getElementById('add-appointment-form').reset();
+        }
+        
+        // عرض سجل المريض
+        function showPatientRecord(patientId) {
+            // يمكن تنفيذ هذه الوظيفة حسب الحاجة
+            alert('وظيفة عرض سجل المريض قيد التطوير');
+        }
+        
+        // إغلاق سجل المريض
+        function closePatientRecord() {
+            document.getElementById('patient-record-modal').style.display = 'none';
+        }
+        
+        // تحديث المواعيد
+        function refreshAppointments() {
             loadTodayAppointments();
-            loadPayments();
+            loadUpcomingAppointments();
+            alert('تم تحديث قائمة المواعيد');
         }
         
         // عند تحميل الصفحة، نتحقق من حالة الدخول
@@ -822,12 +1307,6 @@
                     login();
                 }
             });
-            
-            // تعيين تاريخ اليوم كقيمة افتراضية لحجز الموعد
-            const today = new Date().toISOString().split('T')[0];
-            if (document.getElementById('appointment-date')) {
-                document.getElementById('appointment-date').value = today;
-            }
         });
     </script>
 </body>

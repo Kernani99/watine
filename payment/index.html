@@ -6,7 +6,103 @@
     <title>نظام إدارة المدفوعات - عيادة واتين للأسنان</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <style>
+        /* أنماط تسجيل الدخول */
+        .login-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        .login-logo {
+            font-size: 40px;
+            color: #a76dac;
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            color: #8e44ad;
+            margin-bottom: 30px;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8e44ad;
+            font-weight: 600;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0c8e0;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+        }
+        
+        .login-form input:focus {
+            border-color: #a76dac;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(167, 109, 172, 0.2);
+        }
+        
+        .login-btn {
+            background-color: #a76dac;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            background-color: #8e44ad;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .clinic-info {
+            margin-top: 20px;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+
+        /* أنماط النظام الرئيسية */
         :root {
             --primary: #a76dac;
             --secondary: #8e44ad;
@@ -55,6 +151,24 @@
             position: relative;
         }
         
+        .logout-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        
         .header-content {
             display: flex;
             align-items: center;
@@ -62,8 +176,8 @@
         }
         
         .clinic-logo {
-            height: 70px;
-            width: auto;
+            font-size: 40px;
+            color: white;
         }
         
         .header-text {
@@ -407,8 +521,7 @@
             color: var(--danger);
         }
         
-        /* وصل الدفع */
-        .receipt {
+        .receipt, .report {
             background-color: white;
             padding: 30px;
             max-width: 500px;
@@ -418,7 +531,7 @@
             border: 1px solid #f0e6ef;
         }
         
-        .receipt-header {
+        .receipt-header, .report-header {
             text-align: center;
             margin-bottom: 25px;
             padding-bottom: 20px;
@@ -432,16 +545,16 @@
             margin-bottom: 5px;
         }
         
-        .receipt-logo {
+        .receipt-logo, .report-logo {
             height: 60px;
             margin-bottom: 15px;
         }
         
-        .receipt-details {
+        .receipt-details, .report-details {
             margin: 25px 0;
         }
         
-        .receipt-row {
+        .receipt-row, .report-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 12px;
@@ -449,12 +562,12 @@
             border-bottom: 1px solid #f5f5f5;
         }
         
-        .receipt-label {
+        .receipt-label, .report-label {
             font-weight: 600;
             color: var(--gray);
         }
         
-        .receipt-value {
+        .receipt-value, .report-value {
             font-weight: 500;
         }
         
@@ -469,7 +582,7 @@
             border-bottom: 2px dashed #f0e6ef;
         }
         
-        .receipt-footer {
+        .receipt-footer, .report-footer {
             text-align: center;
             margin-top: 30px;
             padding-top: 20px;
@@ -478,7 +591,6 @@
             color: var(--gray);
         }
         
-        /* اليوميات المالية */
         .income-summary {
             display: flex;
             justify-content: space-between;
@@ -511,7 +623,6 @@
             margin-bottom: 20px;
         }
         
-        /* مجموعة المدفوعات لنفس المريض */
         .patient-payments-group {
             margin-bottom: 25px;
             border: 1px solid #f0e6ef;
@@ -552,19 +663,32 @@
             body * {
                 visibility: hidden;
             }
-            .receipt, .receipt * {
+            .receipt, .receipt *, .report, .report * {
                 visibility: visible;
             }
-            .receipt {
+            .receipt, .report {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
+                width: 210mm; /* A4 width */
+                height: auto;
+                min-height: 297mm; /* A4 height */
                 box-shadow: none;
                 border: none;
+                padding: 20mm;
+                margin: 0;
+                box-sizing: border-box;
             }
             .no-print {
                 display: none !important;
+            }
+            table {
+                width: 100%;
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
             }
         }
         
@@ -607,177 +731,236 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="clinic-logo">
-            <div class="header-text">
-                <h1><i class="fas fa-money-bill-wave"></i> نظام إدارة المدفوعات</h1>
-                <div class="header-info">
-                    <span><i class="fas fa-hospital"></i> عيادة واتين للأسنان</span>
-                    <span><i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر</span>
-                </div>
+    <!-- نافذة تسجيل الدخول -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-logo">
+                <i class="fas fa-tooth"></i>
             </div>
-        </div>
-        <i class="fas fa-heart floral-decoration floral-1" style="color: var(--primary); font-size: 40px;"></i>
-        <i class="fas fa-spa floral-decoration floral-2" style="color: var(--primary); font-size: 40px;"></i>
-    </header>
-    
-    <div class="container">
-        <!-- ملخص المداخيل -->
-        <div class="card">
-            <h2 class="card-title"><i class="fas fa-chart-line" style="color: var(--primary);"></i> ملخص المداخيل</h2>
-            <div class="income-summary">
-                <div class="income-summary-item">
-                    <div class="income-summary-value" id="today-income">0 د.ج</div>
-                    <div class="income-summary-label">مداخيل اليوم</div>
-                </div>
-                <div class="income-summary-item">
-                    <div class="income-summary-value" id="week-income">0 د.ج</div>
-                    <div class="income-summary-label">مداخيل الأسبوع</div>
-                </div>
-                <div class="income-summary-item">
-                    <div class="income-summary-value" id="month-income">0 د.ج</div>
-                    <div class="income-summary-label">مداخيل الشهر</div>
-                </div>
-            </div>
+            <h1 class="login-title">نظام إدارة المدفوعات</h1>
+            <p style="color: var(--gray); margin-bottom: 20px;">عيادة واتين للأسنان</p>
             
-            <div class="report-buttons">
-                <button onclick="printDailyReport()" class="btn btn-primary">
-                    <i class="fas fa-print"></i> طباعة تقرير اليوم
-                </button>
-                <button onclick="printWeeklyReport()" class="btn btn-primary">
-                    <i class="fas fa-print"></i> طباعة تقرير الأسبوع
-                </button>
-                <button onclick="printMonthlyReport()" class="btn btn-primary">
-                    <i class="fas fa-print"></i> طباعة تقرير الشهر
-                </button>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2 class="card-title"><i class="fas fa-plus-circle" style="color: var(--primary);"></i> تسجيل دفعة جديدة</h2>
-            <form id="payment-form">
-                <input type="hidden" id="payment-id">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="patient-select"><i class="fas fa-user-injured" style="margin-left: 5px;"></i> المريض</label>
-                        <select id="patient-select" class="form-control" required style="width: 100%">
-                            <option value="">اختر المريض...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="payment-amount"><i class="fas fa-money-bill-wave" style="margin-left: 5px;"></i> المبلغ (دينار جزائري)</label>
-                        <input type="number" id="payment-amount" class="form-control" placeholder="أدخل المبلغ" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="payment-status"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حالة الدفع</label>
-                        <select id="payment-status" class="form-control" required>
-                            <option value="pending">قيد الانتظار</option>
-                            <option value="completed">مكتمل</option>
-                            <option value="refunded">مسترد</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="payment-date"><i class="far fa-calendar-alt" style="margin-left: 5px;"></i> تاريخ الدفع</label>
-                        <input type="date" id="payment-date" class="form-control" required>
-                    </div>
-                </div>
-                
+            <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label><i class="fas fa-calendar-week" style="margin-left: 5px;"></i> هل الدفع على دفعات؟</label>
-                    <div style="display: flex; gap: 15px; margin-top: 10px;">
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="radio" name="installment" value="no" checked> دفعة واحدة
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="radio" name="installment" value="yes"> دفعات
-                        </label>
-                    </div>
+                    <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
                 </div>
                 
-                <div id="installment-details" style="display: none; margin-top: 15px;">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="total-amount"><i class="fas fa-calculator" style="margin-left: 5px;"></i> المبلغ الإجمالي</label>
-                            <input type="number" id="total-amount" class="form-control" placeholder="المبلغ الكامل">
-                        </div>
-                        <div class="form-group">
-                            <label for="remaining-amount"><i class="fas fa-coins" style="margin-left: 5px;"></i> المبلغ المتبقي</label>
-                            <input type="number" id="remaining-amount" class="form-control" placeholder="المتبقي للدفع">
-                        </div>
-                    </div>
-                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
                 
-                <div class="form-group">
-                    <label for="payment-notes"><i class="far fa-sticky-note" style="margin-left: 5px;"></i> ملاحظات</label>
-                    <textarea id="payment-notes" class="form-control" rows="3" placeholder="أي ملاحظات إضافية..."></textarea>
-                </div>
-                
-                <div class="action-buttons">
-                    <button type="button" id="save-payment" class="btn btn-primary">
-                        <i class="fas fa-save"></i> حفظ الدفعة
-                    </button>
-                    <button type="button" id="update-payment" class="btn btn-warning" style="display: none;">
-                        <i class="fas fa-sync-alt"></i> تحديث الدفعة
-                    </button>
-                    <button type="reset" class="btn btn-secondary">
-                        <i class="fas fa-undo"></i> إعادة تعيين
-                    </button>
-                    <button type="button" id="cancel-edit" class="btn btn-danger" style="display: none;">
-                        <i class="fas fa-times"></i> إلغاء التعديل
-                    </button>
+                <div class="error-message" id="errorMessage">
+                    كلمة المرور غير صحيحة! الرجاء المحاولة مرة أخرى.
                 </div>
             </form>
-        </div>
-        
-        <div class="card">
-            <h2 class="card-title"><i class="fas fa-history" style="color: var(--primary);"></i> سجل المدفوعات</h2>
             
-            <div style="margin-bottom: 20px;">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <input type="text" id="search-payments" class="form-control" placeholder="ابحث باسم المريض أو المبلغ...">
-                    </div>
-                    <div class="form-group">
-                        <select id="filter-status" class="form-control">
-                            <option value="all">جميع الحالات</option>
-                            <option value="pending">قيد الانتظار</option>
-                            <option value="completed">مكتمل</option>
-                            <option value="refunded">مسترد</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <input type="date" id="filter-date" class="form-control">
-                    </div>
-                </div>
-            </div>
-            
-            <div id="payments-list">
-                <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل سجل المدفوعات...</p>
+            <div class="clinic-info">
+                <p><i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر</p>
+                <p><i class="fas fa-phone"></i> 0555555555</p>
             </div>
         </div>
     </div>
-    
-    <!-- نافذة عرض وصل الدفع -->
-    <div id="receipt-modal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-receipt" style="color: var(--primary);"></i> وصل الدفع</h3>
-                <button class="close-btn" onclick="closeReceiptModal()">&times;</button>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" style="display: none;">
+        <header>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+            <div class="header-content">
+                <div class="clinic-logo">
+                    <i class="fas fa-tooth"></i>
+                </div>
+                <div class="header-text">
+                    <h1><i class="fas fa-money-bill-wave"></i> نظام إدارة المدفوعات</h1>
+                    <div class="header-info">
+                        <span><i class="fas fa-hospital"></i> عيادة واتين للأسنان</span>
+                        <span><i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر</span>
+                    </div>
+                </div>
             </div>
-            <div id="receipt-content" class="receipt">
-                <!-- سيتم تعبئته بواسطة JavaScript -->
+        </header>
+        
+        <div class="container">
+            <!-- ملخص المداخيل -->
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-chart-line" style="color: var(--primary);"></i> ملخص المداخيل</h2>
+                <div class="income-summary">
+                    <div class="income-summary-item">
+                        <div class="income-summary-value" id="today-income">0 د.ج</div>
+                        <div class="income-summary-label">مداخيل اليوم</div>
+                    </div>
+                    <div class="income-summary-item">
+                        <div class="income-summary-value" id="week-income">0 د.ج</div>
+                        <div class="income-summary-label">مداخيل الأسبوع</div>
+                    </div>
+                    <div class="income-summary-item">
+                        <div class="income-summary-value" id="month-income">0 د.ج</div>
+                        <div class="income-summary-label">مداخيل الشهر</div>
+                    </div>
+                </div>
+                
+                <div class="report-buttons">
+                    <button onclick="printDailyReport()" class="btn btn-primary">
+                        <i class="fas fa-print"></i> طباعة تقرير اليوم
+                    </button>
+                    <button onclick="printWeeklyReport()" class="btn btn-primary">
+                        <i class="fas fa-print"></i> طباعة تقرير الأسبوع
+                    </button>
+                    <button onclick="printMonthlyReport()" class="btn btn-primary">
+                        <i class="fas fa-print"></i> طباعة تقرير الشهر
+                    </button>
+                </div>
             </div>
-            <div class="action-buttons no-print" style="justify-content: center; margin-top: 20px;">
-                <button onclick="printReceipt()" class="btn btn-primary">
-                    <i class="fas fa-print"></i> طباعة الوصل
-                </button>
-                <button onclick="closeReceiptModal()" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> إغلاق
-                </button>
+            
+            <!-- تسجيل دفعة جديدة -->
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-plus-circle" style="color: var(--primary);"></i> تسجيل دفعة جديدة</h2>
+                <form id="payment-form">
+                    <input type="hidden" id="payment-id">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="patient-select"><i class="fas fa-user-injured" style="margin-left: 5px;"></i> المريض</label>
+                            <select id="patient-select" class="form-control" required style="width: 100%">
+                                <option value="">اختر المريض...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="payment-amount"><i class="fas fa-money-bill-wave" style="margin-left: 5px;"></i> المبلغ (دينار جزائري)</label>
+                            <input type="number" id="payment-amount" class="form-control" placeholder="أدخل المبلغ" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="payment-status"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حالة الدفع</label>
+                            <select id="payment-status" class="form-control" required>
+                                <option value="pending">قيد الانتظار</option>
+                                <option value="completed">مكتمل</option>
+                                <option value="refunded">مسترد</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="payment-date"><i class="far fa-calendar-alt" style="margin-left: 5px;"></i> تاريخ الدفع</label>
+                            <input type="date" id="payment-date" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-week" style="margin-left: 5px;"></i> هل الدفع على دفعات؟</label>
+                        <div style="display: flex; gap: 15px; margin-top: 10px;">
+                            <label style="display: flex; align-items: center; gap: 5px;">
+                                <input type="radio" name="installment" value="no" checked> دفعة واحدة
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px;">
+                                <input type="radio" name="installment" value="yes"> دفعات
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="installment-details" style="display: none; margin-top: 15px;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="total-amount"><i class="fas fa-calculator" style="margin-left: 5px;"></i> المبلغ الإجمالي</label>
+                                <input type="number" id="total-amount" class="form-control" placeholder="المبلغ الكامل" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="paid-amount"><i class="fas fa-money-check-alt" style="margin-left: 5px;"></i> المبلغ المدفوع</label>
+                                <input type="number" id="paid-amount" class="form-control" placeholder="أدخل المبلغ المدفوع" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="remaining-amount"><i class="fas fa-coins" style="margin-left: 5px;"></i> المبلغ المتبقي</label>
+                                <input type="number" id="remaining-amount" class="form-control" placeholder="المتبقي للدفع" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="payment-notes"><i class="far fa-sticky-note" style="margin-left: 5px;"></i> ملاحظات</label>
+                        <textarea id="payment-notes" class="form-control" rows="3" placeholder="أي ملاحظات إضافية..."></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" id="save-payment" class="btn btn-primary">
+                            <i class="fas fa-save"></i> حفظ الدفعة
+                        </button>
+                        <button type="button" id="update-payment" class="btn btn-warning" style="display: none;">
+                            <i class="fas fa-sync-alt"></i> تحديث الدفعة
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> إعادة تعيين
+                        </button>
+                        <button type="button" id="cancel-edit" class="btn btn-danger" style="display: none;">
+                            <i class="fas fa-times"></i> إلغاء التعديل
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-history" style="color: var(--primary);"></i> سجل المدفوعات</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <input type="text" id="search-payments" class="form-control" placeholder="ابحث باسم المريض أو المبلغ...">
+                        </div>
+                        <div class="form-group">
+                            <select id="filter-status" class="form-control">
+                                <option value="all">جميع الحالات</option>
+                                <option value="pending">قيد الانتظار</option>
+                                <option value="completed">مكتمل</option>
+                                <option value="refunded">مسترد</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="filter-date" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="payments-list">
+                    <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل سجل المدفوعات...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- نافذة عرض وصل الدفع -->
+        <div id="receipt-modal" class="modal">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-receipt" style="color: var(--primary);"></i> وصل الدفع</h3>
+                    <button class="close-btn" onclick="closeReceiptModal()">×</button>
+                </div>
+                <div id="receipt-content" class="receipt"></div>
+                <div class="action-buttons no-print" style="justify-content: center; margin-top: 20px;">
+                    <button onclick="printReceipt()" class="btn btn-primary">
+                        <i class="fas fa-print"></i> طباعة الوصل
+                    </button>
+                    <button onclick="closeReceiptModal()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- نافذة عرض التقرير -->
+        <div id="report-modal" class="modal">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-file-alt" style="color: var(--primary);"></i> تقرير مالي</h3>
+                    <button class="close-btn" onclick="closeReportModal()">×</button>
+                </div>
+                <div id="report-content" class="report"></div>
+                <div class="action-buttons no-print" style="justify-content: center; margin-top: 20px;">
+                    <button onclick="printReport()" class="btn btn-primary">
+                        <i class="fas fa-print"></i> طباعة التقرير
+                    </button>
+                    <button onclick="closeReportModal()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -787,7 +970,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     
     <script>
         // تهيئة Firebase
@@ -806,15 +988,15 @@
         
         // عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            // تعيين تاريخ اليوم كقيمة افتراضية
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('payment-date').value = today;
+            // التحقق من تسجيل الدخول
+            checkLogin();
             
             // تهيئة Select2 لبحث المرضى
             $('#patient-select').select2({
                 placeholder: "ابحث عن مريض...",
                 allowClear: true,
                 width: '100%',
+                dir: "rtl",
                 language: {
                     noResults: function() {
                         return "لا توجد نتائج";
@@ -830,13 +1012,20 @@
             // تحميل سجل المدفوعات
             loadPayments();
             
-            // إظهار/إخفاء تفاصيل الدفعات
+            // إظهار/إخفاء تفاصيل الدفعات وتحديث الحقول
             document.querySelectorAll('input[name="installment"]').forEach(radio => {
                 radio.addEventListener('change', function() {
-                    document.getElementById('installment-details').style.display = 
-                        this.value === 'yes' ? 'block' : 'none';
+                    const installmentDetails = document.getElementById('installment-details');
+                    installmentDetails.style.display = this.value === 'yes' ? 'block' : 'none';
+                    if (this.value === 'yes') {
+                        updateInstallmentFields();
+                    }
                 });
             });
+            
+            // تحديث حقول الدفعات عند تغيير المبلغ أو المبلغ المدفوع
+            document.getElementById('payment-amount').addEventListener('input', updateInstallmentFields);
+            document.getElementById('paid-amount').addEventListener('input', updateRemainingAmount);
             
             // حفظ الدفعة
             document.getElementById('save-payment').addEventListener('click', savePayment);
@@ -851,7 +1040,46 @@
             document.getElementById('search-payments').addEventListener('input', filterPayments);
             document.getElementById('filter-status').addEventListener('change', filterPayments);
             document.getElementById('filter-date').addEventListener('change', filterPayments);
+            
+            // تسجيل الدخول
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('errorMessage');
+                
+                // كلمة المرور الصحيحة هي watine123
+                if (password === 'watine123') {
+                    // تخزين حالة تسجيل الدخول في localStorage
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // إخفاء نافذة تسجيل الدخول وإظهار المحتوى الرئيسي
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                } else {
+                    errorMessage.style.display = 'block';
+                    document.getElementById('password').focus();
+                }
+            });
         });
+        
+        // التحقق من تسجيل الدخول
+        function checkLogin() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+            } else {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+        }
+        
+        // تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            checkLogin();
+            document.getElementById('password').value = '';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
         
         // تنسيق عرض المريض في Select2
         function formatPatient(patient) {
@@ -939,8 +1167,8 @@
             const today = new Date().toISOString().split('T')[0];
             const todayPayments = allPayments.filter(p => p.date === today);
             const todayIncome = todayPayments.reduce((sum, p) => {
-                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
-                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+                return p.status === 'completed' ? sum + parseFloat(p.paidAmount || p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.paidAmount || p.amount) : sum;
             }, 0);
             
             const oneWeekAgo = new Date();
@@ -950,8 +1178,8 @@
                 return paymentDate >= oneWeekAgo;
             });
             const weekIncome = weekPayments.reduce((sum, p) => {
-                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
-                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+                return p.status === 'completed' ? sum + parseFloat(p.paidAmount || p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.paidAmount || p.amount) : sum;
             }, 0);
             
             const currentMonth = new Date().getMonth();
@@ -962,8 +1190,8 @@
                        paymentDate.getFullYear() === currentYear;
             });
             const monthIncome = monthPayments.reduce((sum, p) => {
-                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
-                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+                return p.status === 'completed' ? sum + parseFloat(p.paidAmount || p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.paidAmount || p.amount) : sum;
             }, 0);
             
             document.getElementById('today-income').textContent = todayIncome.toFixed(2) + ' د.ج';
@@ -1000,8 +1228,8 @@
                 
                 // حساب إجمالي مدفوعات المريض مع مراعاة المبالغ المستردة
                 const totalAmount = patientPayments.reduce((sum, p) => {
-                    return p.status === 'completed' ? sum + parseFloat(p.amount) : 
-                           p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+                    return p.status === 'completed' ? sum + parseFloat(p.paidAmount || p.amount) : 
+                           p.status === 'refunded' ? sum - parseFloat(p.paidAmount || p.amount) : sum;
                 }, 0);
                 
                 const groupElement = document.createElement('div');
@@ -1039,7 +1267,7 @@
                         
                         <div class="payment-details">
                             <div>
-                                <span class="payment-amount">${payment.amount} د.ج</span>
+                                <span class="payment-amount">${payment.paidAmount || payment.amount} د.ج</span>
                                 ${payment.installment === 'yes' ? 
                                   `<small style="display: block; color: var(--gray);">دفعة من ${payment.totalAmount} د.ج</small>` : ''}
                             </div>
@@ -1085,6 +1313,31 @@
             }
         }
         
+        // تحديث حقول الدفعات
+        function updateInstallmentFields() {
+            const paymentAmount = parseFloat(document.getElementById('payment-amount').value) || 0;
+            const totalAmountInput = document.getElementById('total-amount');
+            const paidAmountInput = document.getElementById('paid-amount');
+            
+            if (document.querySelector('input[name="installment"]:checked').value === 'yes') {
+                totalAmountInput.value = paymentAmount;
+                if (!paidAmountInput.value) {
+                    paidAmountInput.value = paymentAmount;
+                }
+                updateRemainingAmount();
+            }
+        }
+        
+        // تحديث المبلغ المتبقي
+        function updateRemainingAmount() {
+            const totalAmount = parseFloat(document.getElementById('total-amount').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paid-amount').value) || 0;
+            const remainingAmountInput = document.getElementById('remaining-amount');
+            
+            const remainingAmount = totalAmount - paidAmount;
+            remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : 0;
+        }
+        
         // حفظ الدفعة في قاعدة البيانات
         function savePayment() {
             const patientId = document.getElementById('patient-select').value;
@@ -1093,8 +1346,9 @@
             const date = document.getElementById('payment-date').value;
             const installment = document.querySelector('input[name="installment"]:checked').value;
             const notes = document.getElementById('payment-notes').value;
+            const paidAmount = document.getElementById('paid-amount').value;
             
-            if (!patientId || !amount || !date) {
+            if (!patientId || !amount || !date || (installment === 'yes' && !paidAmount)) {
                 alert('الرجاء إدخال جميع الحقول المطلوبة');
                 return;
             }
@@ -1110,6 +1364,7 @@
                 patientName: patient.fullName || patient.name,
                 patientPhone: patient.phone,
                 amount: parseFloat(amount),
+                paidAmount: parseFloat(paidAmount) || parseFloat(amount),
                 status,
                 date,
                 installment,
@@ -1121,7 +1376,7 @@
             if (installment === 'yes') {
                 paymentData.totalAmount = document.getElementById('total-amount').value || amount;
                 paymentData.remainingAmount = document.getElementById('remaining-amount').value || 
-                    (paymentData.totalAmount - amount);
+                    (paymentData.totalAmount - paymentData.paidAmount);
             }
             
             // إنشاء معرف فريد للدفعة
@@ -1158,12 +1413,15 @@
             document.getElementById('payment-date').value = payment.date;
             document.querySelector(`input[name="installment"][value="${payment.installment || 'no'}"]`).checked = true;
             
+            const installmentDetails = document.getElementById('installment-details');
             if (payment.installment === 'yes') {
-                document.getElementById('installment-details').style.display = 'block';
-                document.getElementById('total-amount').value = payment.totalAmount || '';
-                document.getElementById('remaining-amount').value = payment.remainingAmount || '';
+                installmentDetails.style.display = 'block';
+                document.getElementById('total-amount').value = payment.totalAmount || payment.amount;
+                document.getElementById('paid-amount').value = payment.paidAmount || payment.amount;
+                document.getElementById('remaining-amount').value = payment.remainingAmount || 
+                    (payment.totalAmount - (payment.paidAmount || payment.amount));
             } else {
-                document.getElementById('installment-details').style.display = 'none';
+                installmentDetails.style.display = 'none';
             }
             
             document.getElementById('payment-notes').value = payment.notes || '';
@@ -1187,8 +1445,9 @@
             const date = document.getElementById('payment-date').value;
             const installment = document.querySelector('input[name="installment"]:checked').value;
             const notes = document.getElementById('payment-notes').value;
+            const paidAmount = document.getElementById('paid-amount').value;
             
-            if (!patientId || !amount || !date) {
+            if (!patientId || !amount || !date || (installment === 'yes' && !paidAmount)) {
                 alert('الرجاء إدخال جميع الحقول المطلوبة');
                 return;
             }
@@ -1204,6 +1463,7 @@
                 patientName: patient.fullName || patient.name,
                 patientPhone: patient.phone,
                 amount: parseFloat(amount),
+                paidAmount: parseFloat(paidAmount) || parseFloat(amount),
                 status,
                 date,
                 installment,
@@ -1215,7 +1475,7 @@
             if (installment === 'yes') {
                 paymentData.totalAmount = document.getElementById('total-amount').value || amount;
                 paymentData.remainingAmount = document.getElementById('remaining-amount').value || 
-                    (paymentData.totalAmount - amount);
+                    (paymentData.totalAmount - paymentData.paidAmount);
             }
             
             // تحديث البيانات في Firebase
@@ -1241,6 +1501,9 @@
             document.getElementById('payment-form').reset();
             document.getElementById('payment-id').value = '';
             document.getElementById('installment-details').style.display = 'none';
+            document.getElementById('total-amount').value = '';
+            document.getElementById('paid-amount').value = '';
+            document.getElementById('remaining-amount').value = '';
             $('#patient-select').val('').trigger('change');
             
             // إعادة تعيين تاريخ اليوم
@@ -1297,7 +1560,7 @@
                     return (
                         (patient.fullName && patient.fullName.toLowerCase().includes(searchTerm)) ||
                         (patient.phone && patient.phone.includes(searchTerm)) ||
-                        payment.amount.toString().includes(searchTerm) ||
+                        (payment.paidAmount || payment.amount).toString().includes(searchTerm) ||
                         (payment.notes && payment.notes.toLowerCase().includes(searchTerm))
                     );
                 });
@@ -1318,7 +1581,9 @@
             
             const receiptContent = `
                 <div class="receipt-header">
-                    <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="receipt-logo">
+                    <div class="clinic-logo">
+                        <i class="fas fa-tooth" style="font-size: 40px;"></i>
+                    </div>
                     <div class="clinic-name">عيادة واتين للأسنان</div>
                     <div style="color: var(--gray); margin-bottom: 10px;">
                         <i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر
@@ -1359,11 +1624,11 @@
                         </div>
                         <div class="receipt-row">
                             <span class="receipt-label">المبلغ المدفوع:</span>
-                            <span class="receipt-value">${paymentData.amount} د.ج</span>
+                            <span class="receipt-value">${paymentData.paidAmount || paymentData.amount} د.ج</span>
                         </div>
                         <div class="receipt-row">
                             <span class="receipt-label">المبلغ المتبقي:</span>
-                            <span class="receipt-value">${paymentData.remainingAmount || (paymentData.totalAmount - paymentData.amount)} د.ج</span>
+                            <span class="receipt-value">${paymentData.remainingAmount || (paymentData.totalAmount - (paymentData.paidAmount || paymentData.amount))} د.ج</span>
                         </div>
                     ` : `
                         <div class="receipt-row">
@@ -1381,7 +1646,7 @@
                 </div>
                 
                 <div class="receipt-amount">
-                    المبلغ: ${paymentData.amount} دينار جزائري
+                    المبلغ: ${paymentData.paidAmount || paymentData.amount} دينار جزائري
                 </div>
                 
                 <div class="receipt-footer">
@@ -1446,49 +1711,50 @@
         // إنشاء تقرير المدفوعات
         function generateReport(reportType, reportPayments, reportTitle) {
             const totalIncome = reportPayments.reduce((sum, p) => {
-                return p.status === 'completed' ? sum + parseFloat(p.amount) : 
-                       p.status === 'refunded' ? sum - parseFloat(p.amount) : sum;
+                return p.status === 'completed' ? sum + parseFloat(p.paidAmount || p.amount) : 
+                       p.status === 'refunded' ? sum - parseFloat(p.paidAmount || p.amount) : sum;
             }, 0);
             
             let reportHTML = `
-                <div class="receipt">
-                    <div class="receipt-header">
-                        <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="receipt-logo">
-                        <div class="clinic-name">عيادة واتين للأسنان</div>
-                        <div style="color: var(--gray); margin-bottom: 10px;">
-                            <i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر
-                        </div>
-                        <div style="font-size: 18px; font-weight: 600;">${reportTitle}</div>
+                <div class="report-header">
+                    <div class="clinic-logo">
+                        <i class="fas fa-tooth" style="font-size: 40px;"></i>
                     </div>
-                    
-                    <div class="receipt-details">
-                        <div class="receipt-row">
-                            <span class="receipt-label">نوع التقرير:</span>
-                            <span class="receipt-value">${reportType}</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span class="receipt-label">تاريخ التقرير:</span>
-                            <span class="receipt-value">${formatDateWithForeignNumbers(new Date())}</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span class="receipt-label">عدد المدفوعات:</span>
-                            <span class="receipt-value">${reportPayments.length}</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span class="receipt-label">المدفوعات المكتملة:</span>
-                            <span class="receipt-value">${reportPayments.filter(p => p.status === 'completed').length}</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span class="receipt-label">المبالغ المستردة:</span>
-                            <span class="receipt-value">${reportPayments.filter(p => p.status === 'refunded').length}</span>
-                        </div>
+                    <div class="clinic-name">عيادة واتين للأسنان</div>
+                    <div style="color: var(--gray); margin-bottom: 10px;">
+                        <i class="fas fa-map-marker-alt"></i> الجزائر - الجزائر
                     </div>
-                    
-                    <div class="receipt-amount">
-                        الإجمالي: ${totalIncome.toFixed(2)} دينار جزائري
+                    <div style="font-size: 18px; font-weight: 600;">${reportTitle}</div>
+                </div>
+                
+                <div class="report-details">
+                    <div class="report-row">
+                        <span class="report-label">نوع التقرير:</span>
+                        <span class="report-value">${reportType}</span>
                     </div>
-                    
-                    <h3 style="text-align: center; margin: 20px 0;">تفاصيل المدفوعات</h3>
+                    <div class="report-row">
+                        <span class="report-label">تاريخ التقرير:</span>
+                        <span class="report-value">${formatDateWithForeignNumbers(new Date())}</span>
+                    </div>
+                    <div class="report-row">
+                        <span class="report-label">عدد المدفوعات:</span>
+                        <span class="report-value">${reportPayments.length}</span>
+                    </div>
+                    <div class="report-row">
+                        <span class="report-label">المدفوعات المكتملة:</span>
+                        <span class="report-value">${reportPayments.filter(p => p.status === 'completed').length}</span>
+                    </div>
+                    <div class="report-row">
+                        <span class="report-label">المبالغ المستردة:</span>
+                        <span class="report-value">${reportPayments.filter(p => p.status === 'refunded').length}</span>
+                    </div>
+                </div>
+                
+                <div class="receipt-amount">
+                    الإجمالي: ${totalIncome.toFixed(2)} دينار جزائري
+                </div>
+                
+                <h3 style="text-align: center; margin: 20px 0;">تفاصيل المدفوعات</h3>
             `;
             
             if (reportPayments.length > 0) {
@@ -1516,7 +1782,7 @@
                     reportHTML += `
                         <tr style="border-bottom: 1px solid #f0e6ef;">
                             <td style="padding: 10px; text-align: right;">${patient.fullName || patient.name}</td>
-                            <td style="padding: 10px; text-align: right;">${payment.amount} د.ج</td>
+                            <td style="padding: 10px; text-align: right;">${payment.paidAmount || payment.amount} د.ج</td>
                             <td style="padding: 10px; text-align: right;">${statusText}</td>
                             <td style="padding: 10px; text-align: right;">${formatDateWithForeignNumbers(new Date(payment.date))}</td>
                             <td style="padding: 10px; text-align: right;">${payment.notes || '-'}</td>
@@ -1535,7 +1801,7 @@
             }
             
             reportHTML += `
-                    <div class="receipt-footer">
+                    <div class="report-footer">
                         <p>تم إنشاء التقرير آلياً بواسطة نظام إدارة المدفوعات</p>
                         <p>عيادة واتين للأسنان - ${new Date().getFullYear()}</p>
                     </div>
@@ -1546,24 +1812,28 @@
             document.getElementById('report-modal').style.display = 'block';
         }
         
+        // طباعة التقرير
+        function printReport() {
+            window.print();
+        }
+        
+        // إغلاق نافذة التقرير
+        function closeReportModal() {
+            document.getElementById('report-modal').style.display = 'none';
+        }
+        
         // تنسيق التاريخ بأرقام أجنبية
         function formatDateWithForeignNumbers(date) {
-            const options = { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                numberingSystem: 'latn'
-            };
-            
-            let formattedDate = date.toLocaleDateString('ar-EG', options);
-            
-            // استبدال الأرقام العربية بأجنبية (في حالة عدم دعم numberingSystem)
-            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-            for (let i = 0; i < arabicNumbers.length; i++) {
-                formattedDate = formattedDate.replace(new RegExp(arabicNumbers[i], 'g'), i);
+            if (!(date instanceof Date)) {
+                date = new Date(date);
             }
             
-            return formattedDate;
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            
+            // يمكنك تغيير هذا التنسيق حسب الحاجة
+            return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         }
         
         // وظائف مساعدة

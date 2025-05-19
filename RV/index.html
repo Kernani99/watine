@@ -146,6 +146,13 @@
             text-align: center;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
             border-top: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .stat-card.today {
@@ -443,7 +450,7 @@
             background-color: white;
             border-radius: 10px;
             width: 90%;
-            max-width: 600px;
+            max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
             animation: modalFadeIn 0.3s ease;
@@ -518,6 +525,35 @@
             color: #721c24;
         }
         
+        /* جدول المرضى */
+        .patients-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .patients-table th, 
+        .patients-table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .patients-table th {
+            background-color: var(--light-pink);
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .patients-table tr:hover {
+            background-color: var(--light-purple);
+        }
+        
+        .patient-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -553,6 +589,11 @@
             .appointments-stats {
                 grid-template-columns: 1fr 1fr;
             }
+            
+            .patients-table {
+                display: block;
+                overflow-x: auto;
+            }
         }
         
         @media (max-width: 480px) {
@@ -586,25 +627,25 @@
     <div class="container">
         <!-- عدادات المواعيد -->
         <div class="appointments-stats">
-            <div class="stat-card today">
+            <div class="stat-card today" onclick="filterAppointmentsByDay('today')">
                 <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
                 <div class="stat-value" id="today-count">0</div>
                 <div class="stat-label">مواعيد اليوم</div>
             </div>
-            <div class="stat-card upcoming">
+            <div class="stat-card upcoming" onclick="filterAppointmentsByDay('upcoming')">
                 <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                 <div class="stat-value" id="upcoming-count">0</div>
                 <div class="stat-label">مواعيد قادمة</div>
             </div>
-            <div class="stat-card completed">
+            <div class="stat-card completed" onclick="filterAppointmentsByStatus('completed')">
                 <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                 <div class="stat-value" id="completed-count">0</div>
                 <div class="stat-label">مواعيد مكتملة</div>
             </div>
-            <div class="stat-card waiting">
-                <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                <div class="stat-value" id="waiting-count">0</div>
-                <div class="stat-label">في الانتظار</div>
+            <div class="stat-card waiting" onclick="showPatientsList()">
+                <div class="stat-icon"><i class="fas fa-user-injured"></i></div>
+                <div class="stat-value" id="patients-count">0</div>
+                <div class="stat-label">قائمة المرضى</div>
             </div>
         </div>
         
@@ -705,6 +746,49 @@
         </div>
     </div>
 
+    <!-- نافذة قائمة المرضى -->
+    <div id="patients-list-modal" class="modal-overlay">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-user-injured"></i> قائمة المرضى</h3>
+                <button class="close-btn" onclick="closePatientsListModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="search-patient" class="form-control" 
+                           placeholder="ابحث باسم المريض أو رقم الهاتف..." oninput="searchPatients()">
+                </div>
+                
+                <div id="patients-table-container">
+                    <table class="patients-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم الكامل</th>
+                                <th>رقم الهاتف</th>
+                                <th>العمر</th>
+                                <th>الجنس</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patients-list">
+                            <tr>
+                                <td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل قائمة المرضى...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closePatientsListModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إغلاق
+                </button>
+                <button type="button" onclick="openNewPatientModal()" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> إضافة مريض جديد
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- مكتبات JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
@@ -753,27 +837,35 @@
         
         // تحميل قائمة المرضى من Firebase
         function loadPatients() {
-            patientsRef.once('value')
-                .then(snapshot => {
-                    patients = [];
-                    const patientsData = snapshot.val();
-                    if (patientsData) {
-                        Object.entries(patientsData).forEach(([id, patient]) => {
-                            // دعم البيانات القديمة والجديدة
-                            const fullName = patient.fullName || 
-                                           (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
-                            patients.push({ 
-                                id, 
-                                ...patient,
-                                fullName,
-                                phone: patient.phone || 'بدون رقم'
-                            });
+            patientsRef.on('value', function(snapshot) {
+                patients = [];
+                const patientsData = snapshot.val();
+                if (patientsData) {
+                    Object.entries(patientsData).forEach(([id, patient]) => {
+                        // دعم البيانات القديمة والجديدة
+                        const fullName = patient.fullName || 
+                                       (patient.firstName ? `${patient.firstName} ${patient.lastName || ''}` : 'مريض غير معروف');
+                        patients.push({ 
+                            id, 
+                            ...patient,
+                            fullName,
+                            phone: patient.phone || 'بدون رقم',
+                            age: patient.age || 'غير محدد',
+                            gender: patient.gender || 'غير محدد'
                         });
+                    });
+                    
+                    // تحديث عداد المرضى
+                    document.getElementById('patients-count').textContent = patients.length;
+                    
+                    // إذا كانت نافذة المرضى مفتوحة، قم بتحديث القائمة
+                    if (document.getElementById('patients-list-modal').style.display === 'flex') {
+                        displayPatientsList(patients);
                     }
-                })
-                .catch(error => {
-                    console.error("Error loading patients:", error);
-                });
+                }
+            }, function(error) {
+                console.error("Error loading patients:", error);
+            });
         }
         
         // تحميل قائمة المواعيد من Firebase
@@ -910,6 +1002,42 @@
             appointmentsList.innerHTML = appointmentsHTML;
         }
         
+        // عرض قائمة المرضى
+        function displayPatientsList(patientsToDisplay) {
+            const patientsList = document.getElementById('patients-list');
+            
+            if (patientsToDisplay.length === 0) {
+                patientsList.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد نتائج تطابق معايير البحث</td></tr>';
+                return;
+            }
+            
+            let patientsHTML = '';
+            
+            patientsToDisplay.forEach(patient => {
+                patientsHTML += `
+                    <tr>
+                        <td>${patient.fullName}</td>
+                        <td>${patient.phone}</td>
+                        <td>${patient.age}</td>
+                        <td>${patient.gender}</td>
+                        <td class="patient-actions">
+                            <button onclick="createAppointmentForPatient('${patient.id}')" class="btn btn-primary btn-sm">
+                                <i class="fas fa-calendar-plus"></i> موعد
+                            </button>
+                            <button onclick="editPatient('${patient.id}')" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button onclick="deletePatient('${patient.id}')" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            patientsList.innerHTML = patientsHTML;
+        }
+        
         // فتح نافذة إضافة موعد جديد
         function openNewAppointmentModal() {
             document.getElementById('appointment-form').reset();
@@ -937,6 +1065,17 @@
             } else {
                 populatePatientSelect();
             }
+        }
+        
+        // فتح نافذة قائمة المرضى
+        function showPatientsList() {
+            document.getElementById('patients-list-modal').style.display = 'flex';
+            displayPatientsList(patients);
+        }
+        
+        // إغلاق نافذة قائمة المرضى
+        function closePatientsListModal() {
+            document.getElementById('patients-list-modal').style.display = 'none';
         }
         
         // تعبئة قائمة المرضى في القائمة المنسدلة
@@ -1003,6 +1142,51 @@
                 });
         }
         
+        // إنشاء موعد لمريض محدد
+        function createAppointmentForPatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+            
+            closePatientsListModal();
+            openNewAppointmentModal();
+            
+            // تعبئة بيانات المريض في النموذج
+            document.getElementById('appointment-patient').value = patientId;
+            
+            // يمكنك تعبئة المزيد من الحقول هنا إذا لزم الأمر
+        }
+        
+        // تعديل بيانات المريض
+        function editPatient(patientId) {
+            // يمكنك تنفيذ هذه الوظيفة لاحقاً
+            alert('سيتم تنفيذ وظيفة تعديل المريض لاحقاً');
+        }
+        
+        // حذف المريض
+        function deletePatient(patientId) {
+            if (!confirm('هل أنت متأكد من حذف هذا المريض؟ سيتم حذف جميع المواعيد المرتبطة به أيضاً.')) return;
+            
+            // حذف المريض
+            patientsRef.child(patientId).remove()
+                .then(() => {
+                    // حذف جميع المواعيد المرتبطة بهذا المريض
+                    appointmentsRef.orderByChild('patientId').equalTo(patientId).once('value', snapshot => {
+                        const updates = {};
+                        snapshot.forEach(child => {
+                            updates[child.key] = null;
+                        });
+                        appointmentsRef.update(updates);
+                    });
+                    
+                    alert('تم حذف المريض بنجاح');
+                    loadPatients();
+                })
+                .catch(error => {
+                    alert('حدث خطأ أثناء حذف المريض');
+                    console.error("Error deleting patient:", error);
+                });
+        }
+        
         // تغيير حالة الموعد
         function changeAppointmentStatus(appointmentId, newStatus) {
             if (!appointmentId) return;
@@ -1037,8 +1221,10 @@
         }
         
         // تصفية المواعيد حسب اليوم
-        function filterAppointmentsByDay() {
-            const filterValue = document.getElementById('day-filter').value;
+        function filterAppointmentsByDay(filterValue = null) {
+            if (!filterValue) {
+                filterValue = document.getElementById('day-filter').value;
+            }
             
             if (filterValue === 'all') {
                 displayAppointments(appointments);
@@ -1067,6 +1253,8 @@
                         return appointmentDate >= today && appointmentDate < nextWeek;
                     case 'next-week':
                         return appointmentDate >= tomorrow && appointmentDate < nextWeek;
+                    case 'upcoming':
+                        return appointmentDate >= today;
                     default:
                         return true;
                 }
@@ -1076,8 +1264,10 @@
         }
         
         // تصفية المواعيد حسب الحالة
-        function filterAppointmentsByStatus() {
-            const filterValue = document.getElementById('status-filter').value;
+        function filterAppointmentsByStatus(filterValue = null) {
+            if (!filterValue) {
+                filterValue = document.getElementById('status-filter').value;
+            }
             
             if (filterValue === 'all') {
                 displayAppointments(appointments);
@@ -1116,6 +1306,25 @@
             });
             
             displayAppointments(filteredAppointments);
+        }
+        
+        // بحث المرضى
+        function searchPatients() {
+            const searchTerm = document.getElementById('search-patient').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayPatientsList(patients);
+                return;
+            }
+            
+            const filteredPatients = patients.filter(patient => {
+                return patient.fullName.toLowerCase().includes(searchTerm) || 
+                       patient.phone.toLowerCase().includes(searchTerm) ||
+                       (patient.age && patient.age.toString().includes(searchTerm)) ||
+                       (patient.gender && patient.gender.toLowerCase().includes(searchTerm));
+            });
+            
+            displayPatientsList(filteredPatients);
         }
         
         // تنسيق التاريخ بالعربية مع الأرقام الأجنبية

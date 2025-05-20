@@ -173,20 +173,106 @@
             color: white;
         }
         
-        .today-appointments {
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
             margin-top: 20px;
         }
         
-        .appointment-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #f0e6ef;
-            transition: background-color 0.3s;
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
         }
         
-        .appointment-item:hover {
-            background-color: #f9f0f8;
+        .status-pending {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .status-completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-canceled {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .upcoming-appointments {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .appointment-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .appointment-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .appointment-card-time {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .appointment-card-patient {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .appointment-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: var(--light-pink);
         }
         
         .patient-avatar {
@@ -201,18 +287,6 @@
             font-weight: bold;
             font-size: 18px;
             margin-left: 15px;
-        }
-        
-        .appointment-details {
-            flex: 1;
-        }
-        
-        .appointment-time {
-            color: var(--gray);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
         
         .form-group {
@@ -415,107 +489,47 @@
             border: 2px solid var(--primary);
         }
         
-        /* تحسينات جديدة */
-        .card {
-            background-color: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .card-title {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .status-pending {
-            background-color: var(--warning);
-            color: white;
-        }
-        
-        .status-completed {
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .status-canceled {
+        .logout-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
             background-color: var(--danger);
             color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
         }
         
-        .upcoming-appointments {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+        .logout-btn:hover {
+            background-color: #c0392b;
         }
         
-        .appointment-card {
-            background-color: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            border-left: 4px solid var(--primary);
-            transition: all 0.3s ease;
-        }
-        
-        .appointment-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .appointment-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .appointment-card-time {
-            font-weight: bold;
-            color: var(--dark);
-        }
-        
-        .appointment-card-patient {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .appointment-card-actions {
-            display: flex;
-            gap: 10px;
+        .login-error {
+            color: var(--danger);
             margin-top: 15px;
+            display: none;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+        .login-form {
+            margin-top: 30px;
         }
         
-        .empty-state i {
-            font-size: 50px;
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0c8e0;
+            border-radius: 10px;
+            font-size: 15px;
             margin-bottom: 15px;
-            color: var(--light-pink);
+        }
+        
+        .login-form input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(167, 109, 172, 0.2);
         }
         
         @media (max-width: 768px) {
@@ -539,11 +553,22 @@
             .upcoming-appointments {
                 grid-template-columns: 1fr;
             }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .logout-btn {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin: 10px auto;
+                display: block;
+            }
         }
     </style>
-    <!-- خط Cairo للعربية -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- أيقونات Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -552,15 +577,14 @@
         <div class="login-container">
             <img src="https://cdn-icons-png.flaticon.com/512/2966/2966321.png" alt="شعار العيادة" class="login-logo">
             <h2>تسجيل الدخول إلى النظام</h2>
-            <div class="form-group">
-                <label for="login-password">كلمة المرور</label>
-                <input type="password" id="login-password" placeholder="أدخل كلمة المرور الخاصة بالنظام">
-            </div>
-            <button class="btn btn-primary" onclick="login()">
-                <i class="fas fa-sign-in-alt"></i> دخول
-            </button>
-            <div id="login-error" style="color: var(--danger); margin-top: 15px; display: none;">
-                كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى
+            <div class="login-form">
+                <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+                <button class="btn btn-primary" onclick="login()">
+                    <i class="fas fa-sign-in-alt"></i> دخول
+                </button>
+                <div id="login-error" class="login-error">
+                    كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى
+                </div>
             </div>
         </div>
     </div>
@@ -568,8 +592,13 @@
     <!-- لوحة التحكم (مخفية في البداية) -->
     <div id="dashboard" style="display: none;">
         <header>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
             <div class="header-content">
-                <img src="https://i.ibb.co/ZzrbF0P4/SVG.png" alt="شعار العيادة" class="clinic-logo">
+                <div class="clinic-logo">
+                    <i class="fas fa-tooth" style="font-size: 40px; color: white;"></i>
+                </div>
                 <div class="header-text">
                     <h1><i class="fas fa-tooth"></i> نظام إدارة عيادة واتين للأسنان</h1>
                     <div class="header-info">
@@ -588,24 +617,23 @@
                     <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
                     
                     <!-- إجراءات سريعة -->
-                   <div class="quick-actions">
-    <a class="quick-action" href="/RV">
-        <i class="fas fa-calendar-plus"></i>
-        <h3>حجز موعد جديد</h3>
-    </a>
-    <a class="quick-action" href="/patient">
-        <i class="fas fa-user-plus"></i>
-        <h3>إضافة مريض جديد</h3>
-    </a>
-    <a class="quick-action" href="/payment">
-        <i class="fas fa-money-bill-wave"></i>
-        <h3>إدارة المدفوعات</h3>
-    </a>
-    <a class="quick-action" href="/consultation">
-        <i class="fas fa-teeth"></i>
-        <h3>تسجيل علاج جديد</h3>
-    </a>
-</div>
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="showAddAppointmentModal()">
+                            <i class="fas fa-calendar-plus"></i>
+                            <h3>حجز موعد جديد</h3>
+                        </div>
+                        <div class="quick-action" onclick="showAddPatientModal()">
+                            <i class="fas fa-user-plus"></i>
+                            <h3>إضافة مريض جديد</h3>
+                        </div>
+                        <div class="quick-action" onclick="showPaymentsSection()">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3>إدارة المدفوعات</h3>
+                        </div>
+                        <div class="quick-action" onclick="showTreatmentsSection()">
+                            <i class="fas fa-teeth"></i>
+                            <h3>تسجيل علاج جديد</h3>
+                        </div>
                     </div>
                     
                     <!-- إحصائيات سريعة -->
@@ -627,12 +655,6 @@
                             <div class="value" id="today-income">0 د.ج</div>
                             <div><span class="badge"><i class="fas fa-calendar-day"></i> اليوم</span></div>
                         </div>
-                        
-                        <div class="stat-card">
-                            <h3>المواعيد القادمة</h3>
-                            <div class="value" id="upcoming-appointments-count">0</div>
-                            <div><span class="badge warning"><i class="fas fa-clock"></i> خلال 7 أيام</span></div>
-                        </div>
                     </div>
                 </div>
                 
@@ -650,15 +672,45 @@
                         <!-- سيتم ملؤها بالبيانات -->
                     </div>
                 </div>
-                
-                <!-- المواعيد القادمة -->
+            </div>
+            
+            <!-- قسم المدفوعات (مخفي في البداية) -->
+            <div id="payments-section" style="display: none;">
                 <div class="card">
-                    <div class="card-title">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>المواعيد القادمة</span>
+                    <h2 class="card-title">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>إدارة المدفوعات</span>
+                        <button class="btn btn-primary" onclick="showAddPaymentModal()" style="margin-right: auto;">
+                            <i class="fas fa-plus"></i> إضافة دفعة جديدة
+                        </button>
+                    </h2>
+                    
+                    <div class="form-group">
+                        <input type="text" id="payment-search" class="form-control" placeholder="ابحث باسم المريض أو المبلغ...">
                     </div>
                     
-                    <div id="upcoming-appointments-list" class="upcoming-appointments">
+                    <div id="payments-list">
+                        <!-- سيتم ملؤها بالبيانات -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- قسم العلاجات (مخفي في البداية) -->
+            <div id="treatments-section" style="display: none;">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-teeth"></i>
+                        <span>إدارة العلاجات</span>
+                        <button class="btn btn-primary" onclick="showAddTreatmentModal()" style="margin-right: auto;">
+                            <i class="fas fa-plus"></i> إضافة علاج جديد
+                        </button>
+                    </h2>
+                    
+                    <div class="form-group">
+                        <input type="text" id="treatment-search" class="form-control" placeholder="ابحث باسم المريض أو نوع العلاج...">
+                    </div>
+                    
+                    <div id="treatments-list">
                         <!-- سيتم ملؤها بالبيانات -->
                     </div>
                 </div>
@@ -721,19 +773,6 @@
         </div>
     </div>
 
-    <!-- نافذة عرض سجل المريض -->
-    <div id="patient-record-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="patient-record-title"><i class="fas fa-user-injured"></i> سجل المريض</h2>
-                <button class="close-btn" onclick="closePatientRecord()">&times;</button>
-            </div>
-            <div id="patient-record-content">
-                <!-- سيتم ملؤها بالبيانات -->
-            </div>
-        </div>
-    </div>
-
     <!-- نافذة إضافة موعد جديد -->
     <div id="add-appointment-modal" class="modal">
         <div class="modal-content">
@@ -777,13 +816,132 @@
         </div>
     </div>
 
-    <!-- إضافة مكتبات Firebase مباشرة في HTML -->
+    <!-- نافذة إضافة دفعة جديدة -->
+    <div id="add-payment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-money-bill-wave"></i> إضافة دفعة جديدة</h2>
+                <button class="close-btn" onclick="closeAddPaymentModal()">&times;</button>
+            </div>
+            <form id="add-payment-form">
+                <div class="form-group">
+                    <label for="payment-patient">المريض</label>
+                    <select id="payment-patient" class="form-control" required>
+                        <option value="">اختر المريض...</option>
+                    </select>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="payment-amount">المبلغ (د.ج)</label>
+                        <input type="number" id="payment-amount" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-date">تاريخ الدفع</label>
+                        <input type="date" id="payment-date" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="payment-method">طريقة الدفع</label>
+                    <select id="payment-method" class="form-control" required>
+                        <option value="نقدي">نقدي</option>
+                        <option value="بطاقة">بطاقة ائتمان</option>
+                        <option value="تحويل">تحويل بنكي</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="payment-notes">ملاحظات</label>
+                    <textarea id="payment-notes" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" onclick="addPayment()" class="btn btn-success">
+                        <i class="fas fa-save"></i> حفظ الدفعة
+                    </button>
+                    <button type="button" onclick="closeAddPaymentModal()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة علاج جديد -->
+    <div id="add-treatment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-teeth"></i> إضافة علاج جديد</h2>
+                <button class="close-btn" onclick="closeAddTreatmentModal()">&times;</button>
+            </div>
+            <form id="add-treatment-form">
+                <div class="form-group">
+                    <label for="treatment-patient">المريض</label>
+                    <select id="treatment-patient" class="form-control" required>
+                        <option value="">اختر المريض...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="treatment-type">نوع العلاج</label>
+                    <select id="treatment-type" class="form-control" required>
+                        <option value="حشو">حشو</option>
+                        <option value="تنظيف">تنظيف</option>
+                        <option value="خلع">خلع</option>
+                        <option value="تقويم">تقويم</option>
+                        <option value="تبييض">تبييض</option>
+                        <option value="تركيب">تركيب</option>
+                    </select>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="treatment-date">تاريخ العلاج</label>
+                        <input type="date" id="treatment-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="treatment-cost">التكلفة (د.ج)</label>
+                        <input type="number" id="treatment-cost" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="treatment-notes">ملاحظات</label>
+                    <textarea id="treatment-notes" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" onclick="addTreatment()" class="btn btn-success">
+                        <i class="fas fa-save"></i> حفظ العلاج
+                    </button>
+                    <button type="button" onclick="closeAddTreatmentModal()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة عرض سجل المريض -->
+    <div id="patient-record-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="patient-record-title"><i class="fas fa-user-injured"></i> سجل المريض</h2>
+                <button class="close-btn" onclick="closePatientRecord()">&times;</button>
+            </div>
+            <div id="patient-record-content">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
     <script>
-        // تهيئة Firebase مع قاعدة البيانات الجديدة
+        // تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyD7wJ5wK5z5X5X5X5X5X5X5X5X5X5X5X5X",
             authDomain: "watine-b8878.firebaseapp.com",
@@ -800,7 +958,14 @@
         const auth = firebase.auth();
         
         // كلمة المرور الثابتة للنظام
-        const SYSTEM_PASSWORD = "clinic123"; // يمكنك تغييرها إلى ما تريد
+        const SYSTEM_PASSWORD = "watine123";
+        
+        // متغيرات التطبيق
+        let currentUser = null;
+        let patients = [];
+        let appointments = [];
+        let payments = [];
+        let treatments = [];
         
         // تسجيل الدخول بكلمة المرور فقط
         function login() {
@@ -808,44 +973,48 @@
             const errorElement = document.getElementById('login-error');
             
             if (password === SYSTEM_PASSWORD) {
-                // تسجيل دخول ناجح
                 errorElement.style.display = 'none';
                 
-                // نستخدم تسجيل دخول مجهول في Firebase للاستفادة من ميزات الأمان
                 auth.signInAnonymously()
-                    .then(() => {
+                    .then((userCredential) => {
+                        currentUser = userCredential.user;
                         document.getElementById('login-page').style.display = 'none';
                         document.getElementById('dashboard').style.display = 'block';
                         
-                        // تحديث التاريخ الحالي
                         updateCurrentDate();
-                        
-                        // تحميل البيانات
                         loadPatients();
                         loadTodayAppointments();
-                        loadUpcomingAppointments();
                         loadPayments();
+                        loadTreatments();
                     })
                     .catch((error) => {
                         console.error("Anonymous sign-in error:", error);
-                        // في حالة الخطأ، نعتمد على النظام بدون Firebase Auth
                         document.getElementById('login-page').style.display = 'none';
                         document.getElementById('dashboard').style.display = 'block';
                         
-                        // تحديث التاريخ الحالي
                         updateCurrentDate();
-                        
-                        // تحميل البيانات
                         loadPatients();
                         loadTodayAppointments();
-                        loadUpcomingAppointments();
                         loadPayments();
+                        loadTreatments();
                     });
             } else {
-                // كلمة مرور خاطئة
                 errorElement.style.display = 'block';
                 document.getElementById('login-password').focus();
             }
+        }
+        
+        // تسجيل الخروج
+        function logout() {
+            auth.signOut().then(() => {
+                currentUser = null;
+                document.getElementById('login-page').style.display = 'block';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('login-password').value = '';
+                document.getElementById('login-error').style.display = 'none';
+            }).catch((error) => {
+                console.error("Logout error:", error);
+            });
         }
         
         // تحديث التاريخ الحالي
@@ -857,12 +1026,26 @@
             document.getElementById('today-date').textContent = dateString;
         }
         
-        // تحميل قائمة المرضى من قاعدة البيانات الجديدة
+        // تنسيق التاريخ ليتوافق مع Firebase (YYYY-MM-DD)
+        function formatDateForFirebase(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        // تحميل قائمة المرضى من قاعدة البيانات
         function loadPatients() {
             const patientsRef = database.ref('Watine/patients');
             
             patientsRef.on('value', (snapshot) => {
-                const patients = snapshot.val();
+                patients = [];
+                const patientsData = snapshot.val();
                 let patientsCount = 0;
                 let newPatientsCount = 0;
                 
@@ -870,11 +1053,12 @@
                 const currentMonth = currentDate.getMonth();
                 const currentYear = currentDate.getFullYear();
                 
-                if (patients) {
-                    patientsCount = Object.keys(patients).length;
+                if (patientsData) {
+                    patientsCount = Object.keys(patientsData).length;
                     
-                    // حساب عدد المرضى الجدد هذا الشهر
-                    Object.values(patients).forEach(patient => {
+                    Object.entries(patientsData).forEach(([id, patient]) => {
+                        patients.push({ id, ...patient });
+                        
                         if (patient.createdAt) {
                             const createdAt = new Date(patient.createdAt);
                             if (createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear) {
@@ -887,52 +1071,62 @@
                 document.getElementById('patients-count').textContent = patientsCount;
                 document.getElementById('new-patients-count').textContent = newPatientsCount;
                 
-                // تحديث قائمة المرضى في نموذج حجز الموعد
-                updatePatientsDropdown();
+                updatePatientsDropdowns();
             }, (error) => {
                 console.error("Error loading patients: ", error);
             });
         }
         
-        // تحديث قائمة المرضى في نموذج حجز الموعد
-        function updatePatientsDropdown() {
-            const patientsRef = database.ref('Watine/patients');
-            const dropdown = document.getElementById('appointment-patient');
+        // تحديث قوائم المرضى في النماذج المختلفة
+        function updatePatientsDropdowns() {
+            const appointmentDropdown = document.getElementById('appointment-patient');
+            const paymentDropdown = document.getElementById('payment-patient');
+            const treatmentDropdown = document.getElementById('treatment-patient');
             
-            // مسح الخيارات الحالية
-            while (dropdown.options.length > 1) {
-                dropdown.remove(1);
+            while (appointmentDropdown.options.length > 1) {
+                appointmentDropdown.remove(1);
             }
             
-            patientsRef.once('value').then((snapshot) => {
-                const patients = snapshot.val();
+            while (paymentDropdown.options.length > 1) {
+                paymentDropdown.remove(1);
+            }
+            
+            while (treatmentDropdown.options.length > 1) {
+                treatmentDropdown.remove(1);
+            }
+            
+            patients.forEach(patient => {
+                const optionText = `${patient.name} - ${patient.phone}`;
                 
-                if (patients) {
-                    Object.entries(patients).forEach(([id, patient]) => {
-                        const option = document.createElement('option');
-                        option.value = id;
-                        option.textContent = `${patient.name} - ${patient.phone}`;
-                        dropdown.appendChild(option);
-                    });
-                }
+                const appointmentOption = document.createElement('option');
+                appointmentOption.value = patient.id;
+                appointmentOption.textContent = optionText;
+                appointmentDropdown.appendChild(appointmentOption.cloneNode(true));
+                
+                const paymentOption = appointmentOption.cloneNode(true);
+                paymentDropdown.appendChild(paymentOption);
+                
+                const treatmentOption = appointmentOption.cloneNode(true);
+                treatmentDropdown.appendChild(treatmentOption);
             });
         }
         
-        // تحميل مواعيد اليوم من قاعدة البيانات الجديدة
+        // تحميل مواعيد اليوم من قاعدة البيانات
         function loadTodayAppointments() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = formatDateForFirebase(new Date());
             const appointmentsRef = database.ref('Watine/appointments');
             const appointmentsList = document.getElementById('today-appointments-list');
             
             appointmentsRef.orderByChild('date').equalTo(today).on('value', (snapshot) => {
-                const appointments = snapshot.val();
+                appointments = [];
+                const appointmentsData = snapshot.val();
                 let completedCount = 0;
                 
-                if (!appointments) {
+                if (!appointmentsData) {
                     appointmentsList.innerHTML = `
                         <div class="empty-state">
                             <i class="far fa-calendar-check"></i>
-                            <h3>لا توجد مواعيد لليوم</h3>
+                            <h3>لا توجد مواعيد لاليوم</h3>
                             <p>يمكنك إضافة مواعيد جديدة بالنقر على زر "حجز موعد جديد"</p>
                         </div>
                     `;
@@ -942,53 +1136,52 @@
                 }
                 
                 let html = '';
-                const appointmentsArray = Object.entries(appointments);
+                const appointmentsArray = Object.entries(appointmentsData);
                 
                 appointmentsArray.forEach(([id, appointment]) => {
+                    appointments.push({ id, ...appointment });
+                    
                     if (appointment.status === 'completed') {
                         completedCount++;
                     }
                     
-                    // الحصول على بيانات المريض
-                    getPatientById(appointment.patientId).then(patient => {
-                        const patientName = patient ? patient.name : 'مريض غير معروف';
-                        const patientPhone = patient ? patient.phone : '';
-                        
-                        html += `
-                            <div class="appointment-card">
-                                <div class="appointment-card-header">
-                                    <span class="appointment-card-time">
-                                        <i class="far fa-clock"></i> ${appointment.time}
-                                    </span>
-                                    <span class="status-badge ${getStatusClass(appointment.status)}">
-                                        ${getStatusText(appointment.status)}
-                                    </span>
+                    const patient = patients.find(p => p.id === appointment.patientId);
+                    const patientName = patient ? patient.name : 'مريض غير معروف';
+                    const patientPhone = patient ? patient.phone : '';
+                    
+                    html += `
+                        <div class="appointment-card">
+                            <div class="appointment-card-header">
+                                <span class="appointment-card-time">
+                                    <i class="far fa-clock"></i> ${appointment.time}
+                                </span>
+                                <span class="status-badge ${getStatusClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </div>
+                            <div class="appointment-card-patient">
+                                <div class="patient-avatar">
+                                    ${patientName.charAt(0)}
                                 </div>
-                                <div class="appointment-card-patient">
-                                    <div class="patient-avatar">
-                                        ${patientName.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h4>${patientName}</h4>
-                                        <p>${patientPhone}</p>
-                                    </div>
-                                </div>
-                                <p class="appointment-reason">${appointment.reason || 'لا يوجد سبب محدد'}</p>
-                                <div class="appointment-card-actions">
-                                    <button class="btn btn-sm btn-success" onclick="completeAppointment('${id}')">
-                                        <i class="fas fa-check"></i> إكمال
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${id}')">
-                                        <i class="fas fa-times"></i> إلغاء
-                                    </button>
+                                <div>
+                                    <h4>${patientName}</h4>
+                                    <p>${patientPhone}</p>
                                 </div>
                             </div>
-                        `;
-                        
-                        appointmentsList.innerHTML = html;
-                    });
+                            <p class="appointment-reason">${appointment.reason || 'لا يوجد سبب محدد'}</p>
+                            <div class="appointment-card-actions">
+                                <button class="btn btn-sm btn-success" onclick="completeAppointment('${id}')">
+                                    <i class="fas fa-check"></i> إكمال
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${id}')">
+                                    <i class="fas fa-times"></i> إلغاء
+                                </button>
+                            </div>
+                        </div>
+                    `;
                 });
                 
+                appointmentsList.innerHTML = html;
                 document.getElementById('appointments-today').textContent = appointmentsArray.length;
                 document.getElementById('completed-appointments').textContent = completedCount;
             }, (error) => {
@@ -1003,122 +1196,171 @@
             });
         }
         
-        // تحميل المواعيد القادمة (خلال 7 أيام)
-        function loadUpcomingAppointments() {
-            const today = new Date().toISOString().split('T')[0];
-            const nextWeek = new Date();
-            nextWeek.setDate(nextWeek.getDate() + 7);
-            const nextWeekStr = nextWeek.toISOString().split('T')[0];
+        // تحميل المدفوعات من قاعدة البيانات
+        function loadPayments() {
+            const paymentsRef = database.ref('Watine/payments');
+            const paymentsList = document.getElementById('payments-list');
             
-            const appointmentsRef = database.ref('Watine/appointments');
-            const upcomingList = document.getElementById('upcoming-appointments-list');
-            
-            appointmentsRef.orderByChild('date').startAt(today).endAt(nextWeekStr).on('value', (snapshot) => {
-                const appointments = snapshot.val();
+            paymentsRef.orderByChild('date').on('value', (snapshot) => {
+                payments = [];
+                const paymentsData = snapshot.val();
+                let todayIncome = 0;
+                const today = formatDateForFirebase(new Date());
                 
-                if (!appointments) {
-                    upcomingList.innerHTML = `
+                if (!paymentsData) {
+                    paymentsList.innerHTML = `
                         <div class="empty-state">
-                            <i class="far fa-calendar-check"></i>
-                            <h3>لا توجد مواعيد قادمة</h3>
-                            <p>يمكنك إضافة مواعيد جديدة بالنقر على زر "حجز موعد جديد"</p>
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3>لا توجد مدفوعات مسجلة</h3>
+                            <p>يمكنك إضافة مدفوعات جديدة بالنقر على زر "إضافة دفعة جديدة"</p>
                         </div>
                     `;
-                    document.getElementById('upcoming-appointments-count').textContent = '0';
+                    document.getElementById('today-income').textContent = '0 د.ج';
                     return;
                 }
                 
-                let html = '';
-                const appointmentsArray = Object.entries(appointments);
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المريض</th>
+                                <th>المبلغ</th>
+                                <th>التاريخ</th>
+                                <th>طريقة الدفع</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
                 
-                // تصفية مواعيد اليوم لأنها معروضة في قسم آخر
-                const filteredAppointments = appointmentsArray.filter(([id, app]) => app.date !== today);
-                
-                filteredAppointments.forEach(([id, appointment]) => {
-                    // الحصول على بيانات المريض
-                    getPatientById(appointment.patientId).then(patient => {
-                        const patientName = patient ? patient.name : 'مريض غير معروف';
-                        const patientPhone = patient ? patient.phone : '';
-                        
-                        const dateObj = new Date(appointment.date);
-                        const dateStr = dateObj.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
-                        
-                        html += `
-                            <div class="appointment-card">
-                                <div class="appointment-card-header">
-                                    <span class="appointment-card-time">
-                                        <i class="far fa-calendar-alt"></i> ${dateStr}
-                                        <i class="far fa-clock"></i> ${appointment.time}
-                                    </span>
-                                    <span class="status-badge ${getStatusClass(appointment.status)}">
-                                        ${getStatusText(appointment.status)}
-                                    </span>
-                                </div>
-                                <div class="appointment-card-patient">
-                                    <div class="patient-avatar">
-                                        ${patientName.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h4>${patientName}</h4>
-                                        <p>${patientPhone}</p>
-                                    </div>
-                                </div>
-                                <p class="appointment-reason">${appointment.reason || 'لا يوجد سبب محدد'}</p>
-                                <div class="appointment-card-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="editAppointment('${id}')">
-                                        <i class="fas fa-edit"></i> تعديل
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${id}')">
-                                        <i class="fas fa-times"></i> إلغاء
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                        
-                        upcomingList.innerHTML = html;
-                    });
+                Object.entries(paymentsData).forEach(([id, payment]) => {
+                    payments.push({ id, ...payment });
+                    
+                    if (payment.date === today) {
+                        todayIncome += parseFloat(payment.amount) || 0;
+                    }
+                    
+                    const patient = patients.find(p => p.id === payment.patientId);
+                    const patientName = patient ? patient.name : 'مريض غير معروف';
+                    
+                    html += `
+                        <tr>
+                            <td>${patientName}</td>
+                            <td>${payment.amount} د.ج</td>
+                            <td>${formatDateForDisplay(payment.date)}</td>
+                            <td>${payment.method || 'نقدي'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewPaymentDetails('${id}')">
+                                    <i class="fas fa-eye"></i> عرض
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePayment('${id}')">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    `;
                 });
                 
-                document.getElementById('upcoming-appointments-count').textContent = filteredAppointments.length;
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                paymentsList.innerHTML = html;
+                document.getElementById('today-income').textContent = todayIncome.toFixed(2) + ' د.ج';
             }, (error) => {
-                upcomingList.innerHTML = `
+                paymentsList.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h3>حدث خطأ في تحميل المواعيد القادمة</h3>
+                        <h3>حدث خطأ في تحميل المدفوعات</h3>
                         <p>${error.message}</p>
                     </div>
                 `;
-                console.error("Error loading upcoming appointments: ", error);
-            });
-        }
-        
-        // تحميل المدفوعات اليومية من قاعدة البيانات الجديدة
-        function loadPayments() {
-            const today = new Date().toISOString().split('T')[0];
-            const paymentsRef = database.ref('Watine/payments');
-            
-            paymentsRef.orderByChild('date').equalTo(today).on('value', (snapshot) => {
-                const payments = snapshot.val();
-                let totalIncome = 0;
-                
-                if (payments) {
-                    Object.values(payments).forEach(payment => {
-                        if (payment.status === 'completed') {
-                            totalIncome += parseFloat(payment.amount) || 0;
-                        }
-                    });
-                }
-                
-                document.getElementById('today-income').textContent = totalIncome.toFixed(2) + ' د.ج';
-            }, (error) => {
                 console.error("Error loading payments: ", error);
             });
         }
         
-        // الحصول على بيانات المريض بواسطة ID
-        function getPatientById(patientId) {
-            return database.ref(`Watine/patients/${patientId}`).once('value')
-                .then(snapshot => snapshot.val());
+        // تحميل العلاجات من قاعدة البيانات
+        function loadTreatments() {
+            const treatmentsRef = database.ref('Watine/treatments');
+            const treatmentsList = document.getElementById('treatments-list');
+            
+            treatmentsRef.orderByChild('date').on('value', (snapshot) => {
+                treatments = [];
+                const treatmentsData = snapshot.val();
+                
+                if (!treatmentsData) {
+                    treatmentsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-teeth"></i>
+                            <h3>لا توجد علاجات مسجلة</h3>
+                            <p>يمكنك إضافة علاجات جديدة بالنقر على زر "إضافة علاج جديد"</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المريض</th>
+                                <th>نوع العلاج</th>
+                                <th>التاريخ</th>
+                                <th>التكلفة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                Object.entries(treatmentsData).forEach(([id, treatment]) => {
+                    treatments.push({ id, ...treatment });
+                    
+                    const patient = patients.find(p => p.id === treatment.patientId);
+                    const patientName = patient ? patient.name : 'مريض غير معروف';
+                    
+                    html += `
+                        <tr>
+                            <td>${patientName}</td>
+                            <td>${treatment.type}</td>
+                            <td>${formatDateForDisplay(treatment.date)}</td>
+                            <td>${treatment.cost} د.ج</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewTreatmentDetails('${id}')">
+                                    <i class="fas fa-eye"></i> عرض
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTreatment('${id}')">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                treatmentsList.innerHTML = html;
+            }, (error) => {
+                treatmentsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>حدث خطأ في تحميل العلاجات</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                console.error("Error loading treatments: ", error);
+            });
+        }
+        
+        // تنسيق التاريخ للعرض
+        function formatDateForDisplay(dateString) {
+            if (!dateString) return 'غير محدد';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
         }
         
         // الحصول على نص حالة الموعد
@@ -1203,11 +1445,78 @@
                     alert('تمت إضافة الموعد بنجاح');
                     closeAddAppointmentModal();
                     loadTodayAppointments();
-                    loadUpcomingAppointments();
                 })
                 .catch(error => {
                     console.error("Error adding appointment: ", error);
                     alert('حدث خطأ أثناء إضافة الموعد');
+                });
+        }
+        
+        // إضافة دفعة جديدة
+        function addPayment() {
+            const patientId = document.getElementById('payment-patient').value;
+            const amount = document.getElementById('payment-amount').value;
+            const date = document.getElementById('payment-date').value;
+            const method = document.getElementById('payment-method').value;
+            const notes = document.getElementById('payment-notes').value;
+            
+            if (!patientId || !amount || !date || !method) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const newPayment = {
+                patientId,
+                amount,
+                date,
+                method,
+                notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            database.ref('Watine/payments').push(newPayment)
+                .then(() => {
+                    alert('تمت إضافة الدفعة بنجاح');
+                    closeAddPaymentModal();
+                    loadPayments();
+                })
+                .catch(error => {
+                    console.error("Error adding payment: ", error);
+                    alert('حدث خطأ أثناء إضافة الدفعة');
+                });
+        }
+        
+        // إضافة علاج جديد
+        function addTreatment() {
+            const patientId = document.getElementById('treatment-patient').value;
+            const type = document.getElementById('treatment-type').value;
+            const date = document.getElementById('treatment-date').value;
+            const cost = document.getElementById('treatment-cost').value;
+            const notes = document.getElementById('treatment-notes').value;
+            
+            if (!patientId || !type || !date || !cost) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const newTreatment = {
+                patientId,
+                type,
+                date,
+                cost,
+                notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            database.ref('Watine/treatments').push(newTreatment)
+                .then(() => {
+                    alert('تمت إضافة العلاج بنجاح');
+                    closeAddTreatmentModal();
+                    loadTreatments();
+                })
+                .catch(error => {
+                    console.error("Error adding treatment: ", error);
+                    alert('حدث خطأ أثناء إضافة العلاج');
                 });
         }
         
@@ -1219,7 +1528,6 @@
                 })
                 .then(() => {
                     loadTodayAppointments();
-                    loadUpcomingAppointments();
                 })
                 .catch(error => {
                     console.error("Error completing appointment: ", error);
@@ -1236,7 +1544,6 @@
                 })
                 .then(() => {
                     loadTodayAppointments();
-                    loadUpcomingAppointments();
                 })
                 .catch(error => {
                     console.error("Error canceling appointment: ", error);
@@ -1245,10 +1552,120 @@
             }
         }
         
-        // تعديل الموعد
-        function editAppointment(appointmentId) {
-            // يمكن تنفيذ هذه الوظيفة حسب الحاجة
-            alert('وظيفة التعديل قيد التطوير');
+        // حذف دفعة
+        function deletePayment(paymentId) {
+            if (confirm('هل أنت متأكد من حذف هذه الدفعة؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                database.ref(`Watine/payments/${paymentId}`).remove()
+                .then(() => {
+                    loadPayments();
+                })
+                .catch(error => {
+                    console.error("Error deleting payment: ", error);
+                    alert('حدث خطأ أثناء حذف الدفعة');
+                });
+            }
+        }
+        
+        // حذف علاج
+        function deleteTreatment(treatmentId) {
+            if (confirm('هل أنت متأكد من حذف هذا العلاج؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                database.ref(`Watine/treatments/${treatmentId}`).remove()
+                .then(() => {
+                    loadTreatments();
+                })
+                .catch(error => {
+                    console.error("Error deleting treatment: ", error);
+                    alert('حدث خطأ أثناء حذف العلاج');
+                });
+            }
+        }
+        
+        // عرض تفاصيل الدفعة
+        function viewPaymentDetails(paymentId) {
+            const payment = payments.find(p => p.id === paymentId);
+            if (!payment) return;
+            
+            const patient = patients.find(p => p.id === payment.patientId);
+            const patientName = patient ? patient.name : 'مريض غير معروف';
+            
+            const content = `
+                <div class="card">
+                    <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> تفاصيل الدفعة</h3>
+                    <div class="form-group">
+                        <label>المريض</label>
+                        <p>${patientName}</p>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>المبلغ</label>
+                            <p>${payment.amount} د.ج</p>
+                        </div>
+                        <div class="form-group">
+                            <label>تاريخ الدفع</label>
+                            <p>${formatDateForDisplay(payment.date)}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>طريقة الدفع</label>
+                        <p>${payment.method || 'نقدي'}</p>
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات</label>
+                        <p>${payment.notes || 'لا توجد ملاحظات'}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('patient-record-content').innerHTML = content;
+            document.getElementById('patient-record-title').innerHTML = '<i class="fas fa-money-bill-wave"></i> تفاصيل الدفعة';
+            document.getElementById('patient-record-modal').style.display = 'block';
+        }
+        
+        // عرض تفاصيل العلاج
+        function viewTreatmentDetails(treatmentId) {
+            const treatment = treatments.find(t => t.id === treatmentId);
+            if (!treatment) return;
+            
+            const patient = patients.find(p => p.id === treatment.patientId);
+            const patientName = patient ? patient.name : 'مريض غير معروف';
+            
+            const content = `
+                <div class="card">
+                    <h3 class="card-title"><i class="fas fa-teeth"></i> تفاصيل العلاج</h3>
+                    <div class="form-group">
+                        <label>المريض</label>
+                        <p>${patientName}</p>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>نوع العلاج</label>
+                            <p>${treatment.type}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>التكلفة</label>
+                            <p>${treatment.cost} د.ج</p>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>تاريخ العلاج</label>
+                            <p>${formatDateForDisplay(treatment.date)}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>تاريخ التسجيل</label>
+                            <p>${formatDateForDisplay(treatment.createdAt)}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات</label>
+                        <p>${treatment.notes || 'لا توجد ملاحظات'}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('patient-record-content').innerHTML = content;
+            document.getElementById('patient-record-title').innerHTML = '<i class="fas fa-teeth"></i> تفاصيل العلاج';
+            document.getElementById('patient-record-modal').style.display = 'block';
         }
         
         // عرض نافذة إضافة مريض
@@ -1268,7 +1685,6 @@
             document.getElementById('add-appointment-modal').style.display = 'block';
             document.getElementById('appointment-date').focus();
             
-            // تعيين تاريخ اليوم كقيمة افتراضية
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointment-date').value = today;
         }
@@ -1279,10 +1695,55 @@
             document.getElementById('add-appointment-form').reset();
         }
         
-        // عرض سجل المريض
-        function showPatientRecord(patientId) {
-            // يمكن تنفيذ هذه الوظيفة حسب الحاجة
-            alert('وظيفة عرض سجل المريض قيد التطوير');
+        // عرض نافذة إضافة دفعة
+        function showAddPaymentModal() {
+            document.getElementById('add-payment-modal').style.display = 'block';
+            document.getElementById('payment-amount').focus();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('payment-date').value = today;
+        }
+        
+        // إغلاق نافذة إضافة دفعة
+        function closeAddPaymentModal() {
+            document.getElementById('add-payment-modal').style.display = 'none';
+            document.getElementById('add-payment-form').reset();
+        }
+        
+        // عرض نافذة إضافة علاج
+        function showAddTreatmentModal() {
+            document.getElementById('add-treatment-modal').style.display = 'block';
+            document.getElementById('treatment-type').focus();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('treatment-date').value = today;
+        }
+        
+        // إغلاق نافذة إضافة علاج
+        function closeAddTreatmentModal() {
+            document.getElementById('add-treatment-modal').style.display = 'none';
+            document.getElementById('add-treatment-form').reset();
+        }
+        
+        // عرض قسم المدفوعات
+        function showPaymentsSection() {
+            document.getElementById('home-section').style.display = 'none';
+            document.getElementById('payments-section').style.display = 'block';
+            document.getElementById('treatments-section').style.display = 'none';
+        }
+        
+        // عرض قسم العلاجات
+        function showTreatmentsSection() {
+            document.getElementById('home-section').style.display = 'none';
+            document.getElementById('payments-section').style.display = 'none';
+            document.getElementById('treatments-section').style.display = 'block';
+        }
+        
+        // عرض القسم الرئيسي
+        function showHomeSection() {
+            document.getElementById('home-section').style.display = 'block';
+            document.getElementById('payments-section').style.display = 'none';
+            document.getElementById('treatments-section').style.display = 'none';
         }
         
         // إغلاق سجل المريض
@@ -1293,16 +1754,13 @@
         // تحديث المواعيد
         function refreshAppointments() {
             loadTodayAppointments();
-            loadUpcomingAppointments();
             alert('تم تحديث قائمة المواعيد');
         }
         
-        // عند تحميل الصفحة، نتحقق من حالة الدخول
+        // عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            // نركز على حقل كلمة المرور عند تحميل الصفحة
             document.getElementById('login-password').focus();
             
-            // نضيف حدث عند الضغط على Enter في حقل كلمة المرور
             document.getElementById('login-password').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     login();
